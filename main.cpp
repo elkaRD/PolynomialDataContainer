@@ -73,5 +73,11 @@ int main()
     cout<<"wielo3: "<<wielo3.getDegree()<<",   "<<wielo3<<endl;
     cout<<endl;
 
+    string e;
+    if (wielo1.checkLastError(e)) cout<<e<<endl;
+
+    wielo1 = "2x^9";
+    if (wielo1.checkLastError(e)) cout<<e<<endl;
+
     return 0;
 }

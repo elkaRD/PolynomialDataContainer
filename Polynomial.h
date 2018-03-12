@@ -25,6 +25,8 @@ public:
     int calc(int x);
     void reduceFactors();
 
+    bool checkLastError(std::string& getErrorMsg);
+
     inline bool operator == (const Polynomial& right) const;
     inline bool operator != (const Polynomial& right) const;
 
@@ -48,6 +50,9 @@ private:
 
     int monomial[MAX_DEGREE + 1];
     int polyDegree;
+
+    bool isError;
+    std::string errorMsg;
 
     void resetValues();
     void setPolynomial(std::string s);

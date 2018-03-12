@@ -81,6 +81,18 @@ void Polynomial::reduceFactors()
     }
 }
 
+bool Polynomial::checkLastError(string& getErrorMsg)
+{
+    if(isError)
+        getErrorMsg = errorMsg;
+    else
+        getErrorMsg = "";
+
+    bool temp = isError;
+    isError = false;
+    return temp;
+}
+
 inline bool Polynomial::operator == (const Polynomial& right) const
 {
     for (int i = 0; i < MAX_DEGREE + 1; i++)
@@ -281,6 +293,7 @@ void Polynomial::resetValues()
         monomial[i] = 0;
 
     polyDegree = 0;
+    isError = false;
 }
 
 void Polynomial::setPolynomial(string s)
@@ -290,8 +303,11 @@ void Polynomial::setPolynomial(string s)
 
     string curDegree;
     string curValue;
+
     bool isValue = true;
     bool isCorrect = true;
+    bool wasCaret = false;
+    bool newError = false;
 
     for (unsigned int i = 0; i < s.size(); i++)
     {
@@ -305,8 +321,12 @@ void Polynomial::setPolynomial(string s)
 
         if (s[i] == '^')
         {
-            if (isValue || curDegree.size() != 0)
+            if (isValue || curDegree.size() != 0 || wasCaret)
+            {
                 isCorrect = false;
+                newError = true;
+            }
+            wasCaret = true;
             continue;
         }
 
@@ -340,11 +360,17 @@ void Polynomial::setPolynomial(string s)
                     {
                         monomial[degree] += value;
                     }
+                    else
+                    {
+                        newError = true;
+                    }
                 }
             }
 
             isValue = true;
             isCorrect = true;
+            wasCaret = false;
+
             curDegree.clear();
             curValue.clear();
 
@@ -352,7 +378,11 @@ void Polynomial::setPolynomial(string s)
             continue;
         }
 
-        if (!(s[i] >= '0' && s[i] <= '9')) isCorrect = false;
+        if (!(s[i] >= '0' && s[i] <= '9'))
+        {
+            isCorrect = false;
+            newError = true;
+        }
 
         if (isValue)
             curValue += s[i];
@@ -360,6 +390,12 @@ void Polynomial::setPolynomial(string s)
             curDegree += s[i];
     }
     checkDegree();
+
+    if (newError)
+    {
+        isError = true;
+        errorMsg = "Blad wczytywania wielomianu " + s + "; niepoprawne jednomiany zostaly pominiete";
+    }
 }
 
 void Polynomial::checkDegree()
