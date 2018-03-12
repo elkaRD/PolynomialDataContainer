@@ -298,7 +298,6 @@ void Polynomial::resetValues()
 
 void Polynomial::setPolynomial(string s)
 {
-    s += 'a';
     resetValues();
 
     string curDegree;
@@ -308,29 +307,35 @@ void Polynomial::setPolynomial(string s)
     bool isCorrect = true;
     bool wasCaret = false;
     bool newError = false;
+    string errorDetails = "";
 
-    for (unsigned int i = 0; i < s.size(); i++)
+    for (unsigned int i = 0; i < s.size() + 1; i++)
     {
-        if (s[i] == ' ') continue;
-
-        if (s[i] == 'x')
+        if (i != s.size())
         {
-            isValue = false;
-            continue;
-        }
+            if (s[i] == ' ') continue;
 
-        if (s[i] == '^')
-        {
-            if (isValue || curDegree.size() != 0 || wasCaret)
+            if (s[i] == 'x')
             {
-                isCorrect = false;
-                newError = true;
+                isValue = false;
+                continue;
             }
-            wasCaret = true;
-            continue;
+
+            if (s[i] == '^')
+            {
+                if (isValue || curDegree.size() != 0 || wasCaret)
+                {
+                    isCorrect = false;
+                    newError = true;
+
+                    errorDetails += "\n   znak" + to_string(i) + ": niepoprawny znak ^";
+                }
+                wasCaret = true;
+                continue;
+            }
         }
 
-        if (s[i] == '+' || s[i] == '-' || i == s.size() - 1)
+        if (i == s.size() || s[i] == '+' || s[i] == '-')
         {
             if (isCorrect)
             {
@@ -363,6 +368,7 @@ void Polynomial::setPolynomial(string s)
                     else
                     {
                         newError = true;
+                        errorDetails += "\n   znak" + to_string(i) + ": niepoprawny wykladnik zmiennej x";
                     }
                 }
             }
@@ -374,27 +380,31 @@ void Polynomial::setPolynomial(string s)
             curDegree.clear();
             curValue.clear();
 
-            if (s[i] == '-') curValue = "-";
+            if (i != s.size() && s[i] == '-') curValue = "-";
             continue;
         }
 
-        if (!(s[i] >= '0' && s[i] <= '9'))
+        if (i != s.size())
         {
-            isCorrect = false;
-            newError = true;
-        }
+            if (!(s[i] >= '0' && s[i] <= '9'))
+            {
+                isCorrect = false;
+                newError = true;
+                errorDetails += "\n   znak" + to_string(i) + ": znak nie jest cyfra";
+            }
 
-        if (isValue)
-            curValue += s[i];
-        else
-            curDegree += s[i];
+            if (isValue)
+                curValue += s[i];
+            else
+                curDegree += s[i];
+        }
     }
     checkDegree();
 
     if (newError)
     {
         isError = true;
-        errorMsg = "Blad wczytywania wielomianu " + s + "; niepoprawne jednomiany zostaly pominiete";
+        errorMsg = "Blad wczytywania wielomianu " + s + "; niepoprawne jednomiany zostaly pominiete" + errorDetails;
     }
 }
 

@@ -76,7 +76,7 @@ int main()
     string e;
     if (wielo1.checkLastError(e)) cout<<e<<endl;
 
-    wielo1 = "2x^9";
+    wielo1 = "2x^9 + 3x2^3^ - 4x-2";
     if (wielo1.checkLastError(e)) cout<<e<<endl;
 
     return 0;
