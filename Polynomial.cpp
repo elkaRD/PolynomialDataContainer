@@ -1,3 +1,8 @@
+/*  Projekt 2 PROI - Wielomiany
+ *  Robert Dudzinski 2018
+ *  Polynomial.cpp
+ */
+
 #include "Polynomial.h"
 using namespace std;
 

@@ -1,3 +1,8 @@
+/*  Projekt 2 PROI - Wielomiany
+ *  Robert Dudzinski 2018
+ *  Polynomial.h
+ */
+
 #ifndef POLYNOMIAL_H
 #define POLYNOMIAL_H
 
