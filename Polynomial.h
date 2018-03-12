@@ -40,14 +40,6 @@ public:
     Polynomial& operator -= (const int& right);
     Polynomial& operator *= (const int& right);
 
-    Polynomial operator + (const Polynomial& right) const;
-    Polynomial operator - (const Polynomial& right) const;
-    Polynomial operator + (const std::string& right) const;
-    Polynomial operator - (const std::string& right) const;
-    Polynomial operator + (const int& right) const;
-    Polynomial operator - (const int& right) const;
-    Polynomial operator * (const int& right) const;
-
     friend std::ostream& operator << (std::ostream& out, const Polynomial& right);
     friend std::istream& operator >> (std::istream& in, Polynomial& right);
 
@@ -62,6 +54,21 @@ private:
     void checkDegree();
     int greatestCommonDivider(int a, int b);
 };
+
+Polynomial operator + (Polynomial left, const Polynomial& right);
+Polynomial operator - (Polynomial left, const Polynomial& right);
+
+Polynomial operator + (Polynomial left, const std::string& right);
+Polynomial operator - (Polynomial left, const std::string& right);
+Polynomial operator + (Polynomial left, const int& right);
+Polynomial operator - (Polynomial left, const int& right);
+Polynomial operator * (Polynomial left, const int& right);
+
+Polynomial operator + (const std::string& left, Polynomial right);
+Polynomial operator - (const std::string& left, Polynomial right);
+Polynomial operator + (const int& left, Polynomial right);
+Polynomial operator - (const int& left, Polynomial right);
+Polynomial operator * (const int& left, Polynomial right);
 
 std::ostream& operator << (std::ostream& out, const Polynomial& right);
 std::istream& operator >> (std::istream& in, Polynomial& right);

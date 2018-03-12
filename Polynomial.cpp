@@ -180,68 +180,64 @@ Polynomial& Polynomial::operator *= (const int& right)
     return *this;
 }
 
-Polynomial Polynomial::operator + (const Polynomial& right) const
+Polynomial operator + (Polynomial left, const Polynomial& right)
 {
-    Polynomial temp = *this;
-    temp += right;
-
-    return temp;
+    return left += right;
 }
 
-Polynomial Polynomial::operator - (const Polynomial& right) const
+Polynomial operator - (Polynomial left, const Polynomial& right)
 {
-    Polynomial temp = *this;
-    temp -= right;
-
-    return temp;
+    return left -= right;
 }
 
-Polynomial Polynomial::operator + (const string& right) const
+Polynomial operator + (Polynomial left, const string& right)
 {
-    Polynomial temp1 = *this;
-    Polynomial temp2(right);
-    temp1 += temp2;
-
-    return temp1;
+    return left += right;
 }
 
-Polynomial Polynomial::operator - (const string& right) const
+Polynomial operator - (Polynomial left, const string& right)
 {
-    Polynomial temp1 = *this;
-    Polynomial temp2(right);
-    temp1 -= temp2;
-
-    return temp1;
+    return left -= right;
 }
 
-Polynomial Polynomial::operator + (const int& right) const
+Polynomial operator + (Polynomial left, const int& right)
 {
-    Polynomial temp = *this;
-    temp.monomial[0] += right;
-    temp.checkDegree();
-
-    return temp;
+    return left += right;
 }
 
-Polynomial Polynomial::operator - (const int& right) const
+Polynomial operator - (Polynomial left, const int& right)
 {
-    Polynomial temp = *this;
-    temp.monomial[0] -= right;
-    temp.checkDegree();
-
-    return temp;
+    return left -= right;
 }
 
-Polynomial Polynomial::operator * (const int& right) const
+Polynomial operator * (Polynomial left, const int& right)
 {
-    Polynomial temp = *this;
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
-    {
-        temp.monomial[i] *= right;
-    }
-    temp.checkDegree();
+    return left *= right;
+}
 
-    return temp;
+Polynomial operator + (const std::string& left, Polynomial right)
+{
+    return right += left;
+}
+
+Polynomial operator - (const std::string& left, Polynomial right)
+{
+    return right -= left;
+}
+
+Polynomial operator + (const int& left, Polynomial right)
+{
+    return right += left;
+}
+
+Polynomial operator - (const int& left, Polynomial right)
+{
+    return right -= left;
+}
+
+Polynomial operator * (const int& left, Polynomial right)
+{
+    return right *= left;
 }
 
 ostream& operator << (ostream& out, const Polynomial& right)

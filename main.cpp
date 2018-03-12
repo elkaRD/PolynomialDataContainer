@@ -49,5 +49,29 @@ int main()
     cout<<"wielo3 (2):  "<<wielo3.getDegree()<<",   "<<wielo3.calc(2)<<endl;
     cout<<endl;
 
+    wielo1 = wielo3 * 6;
+    wielo2 = 6 * wielo3;
+
+    cout<<"wielo1=wielo3*6:     "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
+    cout<<"wielo2=6*wielo3:     "<<wielo2.getDegree()<<",   "<<wielo2<<endl;
+    cout<<"wielo3:              "<<wielo3.getDegree()<<",   "<<wielo3<<endl;
+    cout<<endl;
+
+    wielo1 = wielo3 - 10;
+    wielo2 = -10 + wielo3;
+
+    cout<<"wielo1=wielo3-10:    "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
+    cout<<"wielo2=-10+wielo3:   "<<wielo2.getDegree()<<",   "<<wielo2<<endl;
+    cout<<"wielo3:              "<<wielo3.getDegree()<<",   "<<wielo3<<endl;
+    cout<<endl;
+
+    wielo1 = "2x3 + 3x3 + 4x5 + x2" + wielo3;
+    wielo2 = "2x3 + 3x3 + 4x5 + x2";
+
+    cout<<"wielo1: "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
+    cout<<"wielo2: "<<wielo2.getDegree()<<",   "<<wielo2<<endl;
+    cout<<"wielo3: "<<wielo3.getDegree()<<",   "<<wielo3<<endl;
+    cout<<endl;
+
     return 0;
 }
