@@ -63,6 +63,20 @@ int Polynomial::calc(int x)
     return sum;
 }
 
+int Polynomial::getFactor(int x)
+{
+    if (x >= 0 && x<= MAX_DEGREE)
+    {
+        return monomial[x];
+    }
+    else
+    {
+        isError = true;
+        errorMsg = "Blad: Proba odczytania nieistniejacego wspolczynnika";
+    }
+    return 0;
+}
+
 void Polynomial::reduceFactors()
 {
     bool isBegin = true;

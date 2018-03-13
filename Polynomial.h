@@ -24,6 +24,7 @@ public:
     void derivative();
     int getDegree();
     int calc(int x);
+    int getFactor(int x);
     void reduceFactors();
 
     static bool checkLastError(std::string& getErrorMsg);
