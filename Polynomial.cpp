@@ -133,14 +133,6 @@ Polynomial& Polynomial::operator = (string const &right)
     return *this;
 }
 
-/*Polynomial& Polynomial::operator = (const int& right)
-{
-    resetValues();
-    monomial[0] = right;
-    polyDegree = 0;
-    return *this;
-}*/
-
 Polynomial& Polynomial::operator += (const Polynomial& right)
 {
     for (int i = 0; i < MAX_DEGREE + 1; i++)
@@ -177,20 +169,6 @@ Polynomial& Polynomial::operator -= (const string& right)
     return *this;
 }
 
-/*Polynomial& Polynomial::operator += (const int& right)
-{
-    monomial[0] += right;
-    checkDegree();
-    return *this;
-}
-
-Polynomial& Polynomial::operator -= (const int& right)
-{
-    monomial[0] -= right;
-    checkDegree();
-    return *this;
-}*/
-
 Polynomial& Polynomial::operator *= (const int& right)
 {
     for (int i = 0; i < MAX_DEGREE + 1; i++)
@@ -221,16 +199,6 @@ Polynomial operator - (Polynomial left, const string& right)
     return left -= right;
 }
 
-/*Polynomial operator + (Polynomial left, const int& right)
-{
-    return left += right;
-}
-
-Polynomial operator - (Polynomial left, const int& right)
-{
-    return left -= right;
-}*/
-
 Polynomial operator * (Polynomial left, const int& right)
 {
     return left *= right;
@@ -245,16 +213,6 @@ Polynomial operator - (const std::string& left, Polynomial right)
 {
     return right -= left;
 }
-
-/*Polynomial operator + (const int& left, Polynomial right)
-{
-    return right += left;
-}
-
-Polynomial operator - (const int& left, Polynomial right)
-{
-    return right -= left;
-}*/
 
 Polynomial operator * (const int& left, Polynomial right)
 {

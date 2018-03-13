@@ -33,14 +33,11 @@ public:
 
     Polynomial& operator = (const Polynomial& right);
     Polynomial& operator = (const std::string& right);
-    //Polynomial& operator = (const int& right);
 
     Polynomial& operator += (const Polynomial& right);
     Polynomial& operator -= (const Polynomial& right);
     Polynomial& operator += (const std::string& right);
     Polynomial& operator -= (const std::string& right);
-    //Polynomial& operator += (const int& right);
-    //Polynomial& operator -= (const int& right);
     Polynomial& operator *= (const int& right);
 
     friend std::ostream& operator << (std::ostream& out, const Polynomial& right);
@@ -66,14 +63,10 @@ Polynomial operator - (Polynomial left, const Polynomial& right);
 
 Polynomial operator + (Polynomial left, const std::string& right);
 Polynomial operator - (Polynomial left, const std::string& right);
-//Polynomial operator + (Polynomial left, const int& right);
-//Polynomial operator - (Polynomial left, const int& right);
 Polynomial operator * (Polynomial left, const int& right);
 
 Polynomial operator + (const std::string& left, Polynomial right);
 Polynomial operator - (const std::string& left, Polynomial right);
-//Polynomial operator + (const int& left, Polynomial right);
-//Polynomial operator - (const int& left, Polynomial right);
 Polynomial operator * (const int& left, Polynomial right);
 
 std::ostream& operator << (std::ostream& out, const Polynomial& right);

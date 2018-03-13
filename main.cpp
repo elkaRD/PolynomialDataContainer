@@ -80,12 +80,18 @@ int main()
     if (Polynomial::checkLastError(e)) cout<<e<<endl<<endl;
 
     cout<<"wielo1: "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
+    cout<<endl;
 
     if (Polynomial::checkLastError(e)) cout<<e<<endl;
 
     wielo1 = "x8+x7+x6+x5+x4+x3+x2+x+1";
+    wielo2 = 7;
+    wielo3 = 2*wielo1*3 + 2*wielo2;
 
     cout<<"wielo1: "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
+    cout<<"wielo2: "<<wielo2.getDegree()<<",   "<<wielo2<<endl;
+    cout<<"wielo3: "<<wielo3.getDegree()<<",   "<<wielo3<<endl;
+    cout<<endl;
 
     if (Polynomial::checkLastError(e)) cout<<e<<endl;
 
