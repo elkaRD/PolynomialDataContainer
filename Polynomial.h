@@ -12,6 +12,36 @@
 
 #define MAX_DEGREE  8
 
+/*
+    ZASADA TWORZENIA OBIEKTOW KLASY STRING DO PRZEDSTAWIANIA WIELOMIANOW
+
+    - program pomija spacje
+    - jeden string moze zawierac dowolna ilosc jednomianow
+    - moze wystapic kilka jednomianow tego samego stopnia; sa wtedy sumowane
+    - jednomiany sa oddzielone znakiem + (wyjatek -> czytaj nastepny pkt)
+    - jezeli nastepny jednomian jest ujemny nalezy napisac pojedynczy minus (bez znaku + przed minusem)
+
+
+    PRAWIDLOWY JEDNOMIAN
+
+    [LICZBA_CALK1] x [LICZBA_CALK2]
+    lub
+    [LICZBA_CALK1] x^ [LICZBA_CALK2]
+    lub
+    [LICZBA_CALK1] x    - zmienna x w stopniu pierwszym
+    lub
+    x                   - zmienna x w stopniu pierwszym; wspolczynnik wynosi 1
+    lub
+    -x                  - zmienna x w stopniu pierwszym; wspolczynnik wynosi -1
+    lub
+    [LICZBA_CALK]       - wyraz wolny
+
+    gdzie:
+    LICZBA_CALK1 - wspolczynnik przy odpowiedniej potedze x (liczba calkowita o zakresie zmiennej typu int)
+    LICZBA_CALK2 - potega do ktorej podniesiony jest x (liczba calkowita z zakresu [0; MAX_DEGREE]
+
+*/
+
 class Polynomial
 {
 public:

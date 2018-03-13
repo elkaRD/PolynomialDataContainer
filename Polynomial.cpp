@@ -80,7 +80,7 @@ int Polynomial::getFactor(int x)
 void Polynomial::reduceFactors()
 {
     bool isBegin = true;
-    int gcd;
+    int gcd = 1;
 
     for (int i = 0; i < MAX_DEGREE + 1; i++)
     {
@@ -257,6 +257,9 @@ ostream& operator << (ostream& out, const Polynomial& right)
             isFirst = false;
         }
     }
+    if (right.polyDegree == 0 && right.monomial[0] == 0)
+        out << "0";
+
     return out;
 }
 
@@ -332,6 +335,15 @@ void Polynomial::setPolynomial(string s)
 
         if (i == s.size() || s[i] == '+' || s[i] == '-')
         {
+            if ((curValue.size() == 0 || curValue.compare("-") == 0) && curDegree.size() == 0 && !wasX)
+            {
+                int index = i<1 ? 0 : i-1;
+                isCorrect = false;
+                newError = true;
+                errorChar[index] = true;
+                if (i) errorDetails += "\n   znak " + to_string(index) + ": pojedynczy znak + lub -";
+            }
+
             if (isCorrect)
             {
                 int value;
@@ -362,9 +374,10 @@ void Polynomial::setPolynomial(string s)
                     }
                     else
                     {
+                        int index = i-1<0 ? 0 : i-1;
                         newError = true;
-                        errorChar[i-1] = true;
-                        errorDetails += "\n   znak " + to_string(i-1) + ": niepoprawny wykladnik zmiennej x";
+                        errorChar[index] = true;
+                        errorDetails += "\n   znak " + to_string(index) + ": niepoprawny wykladnik zmiennej x";
                     }
                 }
             }

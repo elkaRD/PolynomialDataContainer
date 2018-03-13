@@ -7,122 +7,14 @@
 using namespace std;
 
 void przyklady();
+void ui();
 
 int main()
 {
-    przyklady();
-
-    Polynomial wielo;
-
-    while(true)
-    {
-        cout << endl << endl;
-        cout << "Obecny wielomian: " << wielo << endl << endl;
-        cout << "[1] Dodaj" << endl;
-        cout << "[2] Odejmij" << endl;
-        cout << "[3] Pomnoz przez skalar" <<endl;
-        cout << "[4] Pochodna" << endl;
-        cout << "[5] Przypisz" << endl;
-        cout << "[6] Zredukuj wspolcz" << endl;
-        cout << "[7] Policz wartosc" << endl;
-        cout << "[8] Podaj wspolcz" << endl;
-        cout << endl << "[0] Zakoncz" << endl;
-
-        int menu;
-        cin >> menu;
-
-        bool quit = false;
-
-        switch (menu)
-        {
-        case 1:
-            {
-            Polynomial temp;
-            cout<<"Podaj wielomian: ";
-            cin.clear();
-            cin.ignore();
-            cin>>temp;
-            cout<<wielo<<" dodaj "<<temp<<endl;
-            wielo += temp;
-            break;
-            }
-        case 2:
-            {
-            Polynomial temp;
-            cout<<"Podaj wielomian: ";
-            cin.clear();
-            cin.ignore();
-            cin>>temp;
-            cout<<wielo<<" odejmij "<<temp<<endl;
-            wielo -= temp;
-            break;
-            }
-        case 3:
-            {
-            cout<<"Podaj skalar: ";
-            int temp;
-            cin.clear();
-            cin.ignore();
-            cin>>temp;
-            cout<<temp<<" * (" + wielo + ")"<<endl;
-            wielo *= temp;
-            break;
-            }
-        case 4:
-            {
-            cout<<wielo<<" dx"<<endl;
-            wielo.derivative();
-            break;
-            }
-        case 5:
-            {
-            cout<<"Podaj wielomian: ";
-            cin.clear();
-            cin.ignore();
-            cin>>wielo;
-            break;
-            }
-        case 6:
-            {
-            cout<<"zredukuj wspolczynniki"<<endl;
-            wielo.reduceFactors();
-            break;
-            }
-        case 7:
-            {
-            int temp;
-            cout<<"Podaj x: ";
-            cin.clear();
-            cin.ignore();
-            cin>>temp;
-            cout<<"w("<<temp<<") = "<<wielo.calc(temp)<<endl;
-            break;
-            }
-        case 8:
-            {
-            int temp;
-            cout<<"Podaj wspolczynnik: ";
-            cin.clear();
-            cin.ignore();
-            cin>>temp;
-            cout<<"wspolczynnik przy x^"<<temp<<" = "<<wielo.getFactor(temp);
-            break;
-            }
-        case 0:
-            {
-            quit = true;
-            break;
-            }
-        }
-
-        string e;
-        if (Polynomial::checkLastError(e)) cout << endl << e << endl;
-
-        if (quit) break;
-
-        cin.clear();
-        cin.ignore();
-    }
+    cout << "   Projekt PROI - Operacje na wielomianach" <<endl;
+    cout << "   Robert Dudzinski" <<endl;
+    //przyklady();
+    ui();
 
     return 0;
 }
@@ -219,4 +111,119 @@ void przyklady()
     cout<<"w3: wsp przy x^9:    "<<wielo3.getFactor(9)<<endl;
 
     if (Polynomial::checkLastError(e)) cout<<e<<endl;
+}
+
+void ui()
+{
+    Polynomial wielo;
+
+    while(true)
+    {
+        cout << endl << endl;
+        cout << "Obecny wielomian: " << wielo << endl << endl;
+        cout << "[1] Dodaj" << endl;
+        cout << "[2] Odejmij" << endl;
+        cout << "[3] Pomnoz przez skalar" <<endl;
+        cout << "[4] Pochodna" << endl;
+        cout << "[5] Przypisz" << endl;
+        cout << "[6] Zredukuj wspolcz" << endl;
+        cout << "[7] Policz wartosc" << endl;
+        cout << "[8] Podaj wspolcz" << endl;
+        cout << endl << "[0] Zakoncz" << endl;
+
+        int menu;
+        cin >> menu;
+
+        bool quit = false;
+
+        switch (menu)
+        {
+        case 1:
+            {
+                Polynomial temp;
+                cout<<"Podaj wielomian: ";
+                cin.clear();
+                cin.ignore();
+                cin>>temp;
+                cout<<wielo<<" dodaj "<<temp<<endl;
+                wielo += temp;
+                break;
+            }
+        case 2:
+            {
+                Polynomial temp;
+                cout<<"Podaj wielomian: ";
+                cin.clear();
+                cin.ignore();
+                cin>>temp;
+                cout<<wielo<<" odejmij "<<temp<<endl;
+                wielo -= temp;
+                break;
+            }
+        case 3:
+            {
+                cout<<"Podaj skalar: ";
+                int temp;
+                cin.clear();
+                cin.ignore();
+                cin>>temp;
+                cout<<temp<<" * ("<<wielo<<")"<<endl;
+                wielo *= temp;
+                break;
+            }
+        case 4:
+            {
+                cout<<wielo<<" dx"<<endl;
+                wielo.derivative();
+                break;
+            }
+        case 5:
+            {
+                cout<<"Podaj wielomian: ";
+                cin.clear();
+                cin.ignore();
+                cin>>wielo;
+                break;
+            }
+        case 6:
+            {
+                cout<<"zredukuj wspolczynniki"<<endl;
+                wielo.reduceFactors();
+                break;
+            }
+        case 7:
+            {
+                int temp;
+                cout<<"Podaj x: ";
+                cin.clear();
+                cin.ignore();
+                cin>>temp;
+                cout<<"w("<<temp<<") = "<<wielo.calc(temp)<<endl;
+                break;
+            }
+        case 8:
+            {
+                int temp;
+                cout<<"Podaj wspolczynnik: ";
+                cin.clear();
+                cin.ignore();
+                cin>>temp;
+                cout<<"wspolczynnik przy x^"<<temp<<" = "<<wielo.getFactor(temp);
+                break;
+            }
+        case 0:
+            {
+                quit = true;
+                break;
+            }
+        }
+
+        string e;
+        if (Polynomial::checkLastError(e)) cout << endl << e << endl;
+
+        if (quit) break;
+
+        cin.clear();
+        cin.ignore();
+    }
 }
