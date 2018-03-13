@@ -6,6 +6,9 @@
 #include "Polynomial.h"
 using namespace std;
 
+bool Polynomial::isError = false;
+string Polynomial::errorMsg = "";
+
 Polynomial::Polynomial ()
 {
     resetValues();
@@ -23,6 +26,12 @@ Polynomial::Polynomial(const Polynomial& poly)
         monomial[i] = poly.monomial[i];
     }
     checkDegree();
+}
+
+Polynomial::Polynomial(int x)
+{
+    resetValues();
+    monomial[0] = x;
 }
 
 void Polynomial::derivative()
@@ -124,13 +133,13 @@ Polynomial& Polynomial::operator = (string const &right)
     return *this;
 }
 
-Polynomial& Polynomial::operator = (const int& right)
+/*Polynomial& Polynomial::operator = (const int& right)
 {
     resetValues();
     monomial[0] = right;
-    polyDegree = 1;
+    polyDegree = 0;
     return *this;
-}
+}*/
 
 Polynomial& Polynomial::operator += (const Polynomial& right)
 {
@@ -168,7 +177,7 @@ Polynomial& Polynomial::operator -= (const string& right)
     return *this;
 }
 
-Polynomial& Polynomial::operator += (const int& right)
+/*Polynomial& Polynomial::operator += (const int& right)
 {
     monomial[0] += right;
     checkDegree();
@@ -180,7 +189,7 @@ Polynomial& Polynomial::operator -= (const int& right)
     monomial[0] -= right;
     checkDegree();
     return *this;
-}
+}*/
 
 Polynomial& Polynomial::operator *= (const int& right)
 {
@@ -212,7 +221,7 @@ Polynomial operator - (Polynomial left, const string& right)
     return left -= right;
 }
 
-Polynomial operator + (Polynomial left, const int& right)
+/*Polynomial operator + (Polynomial left, const int& right)
 {
     return left += right;
 }
@@ -220,7 +229,7 @@ Polynomial operator + (Polynomial left, const int& right)
 Polynomial operator - (Polynomial left, const int& right)
 {
     return left -= right;
-}
+}*/
 
 Polynomial operator * (Polynomial left, const int& right)
 {
@@ -237,7 +246,7 @@ Polynomial operator - (const std::string& left, Polynomial right)
     return right -= left;
 }
 
-Polynomial operator + (const int& left, Polynomial right)
+/*Polynomial operator + (const int& left, Polynomial right)
 {
     return right += left;
 }
@@ -245,7 +254,7 @@ Polynomial operator + (const int& left, Polynomial right)
 Polynomial operator - (const int& left, Polynomial right)
 {
     return right -= left;
-}
+}*/
 
 Polynomial operator * (const int& left, Polynomial right)
 {
@@ -293,7 +302,6 @@ void Polynomial::resetValues()
         monomial[i] = 0;
 
     polyDegree = 0;
-    isError = false;
 }
 
 void Polynomial::setPolynomial(string s)
@@ -306,17 +314,31 @@ void Polynomial::setPolynomial(string s)
     bool isValue = true;
     bool isCorrect = true;
     bool wasCaret = false;
+    bool wasX = false;
     bool newError = false;
     string errorDetails = "";
+    bool errorChar[s.size()];
 
     for (unsigned int i = 0; i < s.size() + 1; i++)
     {
         if (i != s.size())
         {
+            errorChar[i] = false;
+
             if (s[i] == ' ') continue;
 
             if (s[i] == 'x')
             {
+                if (wasX)
+                {
+                    isCorrect = false;
+                    newError = true;
+                    errorChar[i] = true;
+
+                    errorDetails += "\n   znak " + to_string(i) + ": znak x wystapil juz w tym jednomianie";
+                }
+
+                wasX = true;
                 isValue = false;
                 continue;
             }
@@ -327,8 +349,9 @@ void Polynomial::setPolynomial(string s)
                 {
                     isCorrect = false;
                     newError = true;
+                    errorChar[i] = true;
 
-                    errorDetails += "\n   znak" + to_string(i) + ": niepoprawny znak ^";
+                    errorDetails += "\n   znak " + to_string(i) + ": niepoprawne uzycie znaku ^";
                 }
                 wasCaret = true;
                 continue;
@@ -368,7 +391,8 @@ void Polynomial::setPolynomial(string s)
                     else
                     {
                         newError = true;
-                        errorDetails += "\n   znak" + to_string(i) + ": niepoprawny wykladnik zmiennej x";
+                        errorChar[i-1] = true;
+                        errorDetails += "\n   znak " + to_string(i-1) + ": niepoprawny wykladnik zmiennej x";
                     }
                 }
             }
@@ -376,6 +400,7 @@ void Polynomial::setPolynomial(string s)
             isValue = true;
             isCorrect = true;
             wasCaret = false;
+            wasX = false;
 
             curDegree.clear();
             curValue.clear();
@@ -390,7 +415,8 @@ void Polynomial::setPolynomial(string s)
             {
                 isCorrect = false;
                 newError = true;
-                errorDetails += "\n   znak" + to_string(i) + ": znak nie jest cyfra";
+                errorChar[i] = true;
+                errorDetails += "\n   znak " + to_string(i) + ": znak nie jest cyfra";
             }
 
             if (isValue)
@@ -404,7 +430,14 @@ void Polynomial::setPolynomial(string s)
     if (newError)
     {
         isError = true;
-        errorMsg = "Blad wczytywania wielomianu " + s + "; niepoprawne jednomiany zostaly pominiete" + errorDetails;
+        errorMsg = "Blad wczytywania wielomianu \"" + s + "\"\n";
+        errorMsg+= "              Bledne znaki:  ";
+        for (unsigned int i = 0; i < s.size(); i++)
+        {
+            if (errorChar[i]) errorMsg += "^";
+            else errorMsg += "-";
+        }
+        errorMsg += errorDetails + "\nNiepoprawne jednomiany zostaly pominiete.";
     }
 }
 

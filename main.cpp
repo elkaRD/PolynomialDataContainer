@@ -74,10 +74,20 @@ int main()
     cout<<endl;
 
     string e;
-    if (wielo1.checkLastError(e)) cout<<e<<endl;
+    if (Polynomial::checkLastError(e)) cout<<e<<endl;
 
-    wielo1 = "2x^9 + 3x2^3^ - 4x-2";
-    if (wielo1.checkLastError(e)) cout<<e<<endl;
+    wielo1 = "2x^9 + 3x2^3^ - 4x-2sadf + 8x2 + 7xx + x + x2x";
+    if (Polynomial::checkLastError(e)) cout<<e<<endl<<endl;
+
+    cout<<"wielo1: "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
+
+    if (Polynomial::checkLastError(e)) cout<<e<<endl;
+
+    wielo1 = "x8+x7+x6+x5+x4+x3+x2+x+1";
+
+    cout<<"wielo1: "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
+
+    if (Polynomial::checkLastError(e)) cout<<e<<endl;
 
     return 0;
 }
