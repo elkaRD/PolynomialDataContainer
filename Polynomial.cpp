@@ -179,6 +179,8 @@ void Polynomial::setPolynomial(string s)
 
     bool isValue = true;
     bool isCorrect = true;
+    bool isFirstChar = true;
+    bool hFirstChar = true;
     bool wasCaret = false;
     bool wasX = false;
     bool newError = false;
@@ -190,8 +192,10 @@ void Polynomial::setPolynomial(string s)
         if (i != s.size())
         {
             errorChar[i] = false;
+            isFirstChar = hFirstChar;
 
             if (s[i] == ' ') continue;
+            else hFirstChar = false;
 
             if (s[i] == 'x')
             {
@@ -236,7 +240,7 @@ void Polynomial::setPolynomial(string s)
                 errorDetails += "\n   znak " + to_string(index) + ": pojedynczy znak + lub -";
             }
 
-            if (isCorrect)
+            if (isCorrect && !isFirstChar)
             {
                 int value;
                 if (curValue.size() == 0)

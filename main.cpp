@@ -34,9 +34,6 @@ void przyklady()
     cout<<"w3 == str:       "<<(wielo2 == "x^5 + 3x^4 - 5x^2 + 1")<<endl;
     cout<<endl;
 
-    if (wielo1 == wielo2)
-        if (wielo2 != wielo3);
-
     wielo1 = "-x^3 + 5x^2 + 2";
     wielo2 += wielo1;
     wielo3 = wielo1 - wielo2;
@@ -46,7 +43,7 @@ void przyklady()
     cout<<"w3 = w1 - w2:    "<<wielo3.getDegree()<<",   "<<wielo3<<endl;
     cout<<endl;
 
-    wielo1 += "11x^3-18";
+    wielo1 += "11x^3-17";
     wielo2 *= 4;
     wielo3.derivative();
 
