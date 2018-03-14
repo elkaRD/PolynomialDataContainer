@@ -95,6 +95,7 @@ void Polynomial::reduceFactors()
             {
                 isBegin = false;
                 gcd = monomial[i];
+                if (gcd < 0) gcd *= -1;
             }
             else
             {
