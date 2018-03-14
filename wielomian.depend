@@ -1,8 +1,8 @@
 # depslib dependency file v1.0
-1521062281 source:/home/robert/Desktop/wielomian/main.cpp
+1521064270 source:/home/robert/Desktop/wielomian/main.cpp
 	"Polynomial.h"
 
-1521053361 /home/robert/Desktop/wielomian/Polynomial.h
+1521065294 /home/robert/Desktop/wielomian/Polynomial.h
 	<iostream>
 	<cstdlib>
 	<string>

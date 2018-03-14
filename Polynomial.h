@@ -28,13 +28,13 @@
     lub
     [LICZBA_CALK1] x^ [LICZBA_CALK2]
     lub
-    [LICZBA_CALK1] x    - zmienna x w stopniu pierwszym
+    [LICZBA_CALK1] x   lub   [LICZBA_CALK1] x^  - zmienna x w stopniu pierwszym
     lub
-    x                   - zmienna x w stopniu pierwszym; wspolczynnik wynosi 1
+    x                                           - zmienna x w stopniu pierwszym; wspolczynnik wynosi 1
     lub
-    -x                  - zmienna x w stopniu pierwszym; wspolczynnik wynosi -1
+    -x                                          - zmienna x w stopniu pierwszym; wspolczynnik wynosi -1
     lub
-    [LICZBA_CALK]       - wyraz wolny
+    [LICZBA_CALK]                               - wyraz wolny
 
     gdzie:
     LICZBA_CALK1 - wspolczynnik przy odpowiedniej potedze x (liczba calkowita o zakresie zmiennej typu int)
