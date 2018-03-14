@@ -14,7 +14,12 @@ Polynomial::Polynomial ()
     resetValues();
 }
 
-Polynomial::Polynomial (string s)
+Polynomial::Polynomial(const char* s)
+{
+    setPolynomial(s);
+}
+
+Polynomial::Polynomial (const string s)
 {
     setPolynomial(s);
 }
@@ -141,12 +146,6 @@ Polynomial& Polynomial::operator = (Polynomial const &right)
     return *this;
 }
 
-Polynomial& Polynomial::operator = (string const &right)
-{
-    setPolynomial(right);
-    return *this;
-}
-
 Polynomial& Polynomial::operator += (const Polynomial& right)
 {
     for (int i = 0; i < MAX_DEGREE + 1; i++)
@@ -164,22 +163,6 @@ Polynomial& Polynomial::operator -= (const Polynomial& right)
         monomial[i] -= right.monomial[i];
     }
     checkDegree();
-    return *this;
-}
-
-Polynomial& Polynomial::operator += (const string& right)
-{
-    Polynomial temp(right);
-    *this += temp;
-
-    return *this;
-}
-
-Polynomial& Polynomial::operator -= (const string& right)
-{
-    Polynomial temp(right);
-    *this -= temp;
-
     return *this;
 }
 
@@ -203,29 +186,9 @@ Polynomial operator - (Polynomial left, const Polynomial& right)
     return left -= right;
 }
 
-Polynomial operator + (Polynomial left, const string& right)
-{
-    return left += right;
-}
-
-Polynomial operator - (Polynomial left, const string& right)
-{
-    return left -= right;
-}
-
 Polynomial operator * (Polynomial left, const int& right)
 {
     return left *= right;
-}
-
-Polynomial operator + (const std::string& left, Polynomial right)
-{
-    return right += left;
-}
-
-Polynomial operator - (const std::string& left, Polynomial right)
-{
-    return right -= left;
 }
 
 Polynomial operator * (const int& left, Polynomial right)
@@ -335,13 +298,14 @@ void Polynomial::setPolynomial(string s)
 
         if (i == s.size() || s[i] == '+' || s[i] == '-')
         {
-            if ((curValue.size() == 0 || curValue.compare("-") == 0) && curDegree.size() == 0 && !wasX)
+            if ((curValue.size() == 0 || curValue.compare("-") == 0) && curDegree.size() == 0 && !wasX && i != 0)
             {
                 int index = i<1 ? 0 : i-1;
+                //int index=i;
                 isCorrect = false;
                 newError = true;
                 errorChar[index] = true;
-                if (i) errorDetails += "\n   znak " + to_string(index) + ": pojedynczy znak + lub -";
+                errorDetails += "\n   znak " + to_string(index) + ": pojedynczy znak + lub -";
             }
 
             if (isCorrect)

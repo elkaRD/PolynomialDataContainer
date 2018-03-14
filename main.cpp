@@ -13,7 +13,8 @@ int main()
 {
     cout << "   Projekt PROI - Operacje na wielomianach" <<endl;
     cout << "   Robert Dudzinski" <<endl;
-    //przyklady();
+
+    przyklady();
     ui();
 
     return 0;
@@ -78,7 +79,7 @@ void przyklady()
     cout<<"w3:              "<<wielo3.getDegree()<<",   "<<wielo3<<endl;
     cout<<endl;
 
-    wielo1 = "2x3 + 3x3 + 4x5 + x2" + wielo3;
+    wielo1 = string("2x3 + 3x3 + 4x5 + x2") + wielo3;
     wielo2 = "2x3 + 3x3 + 4x5 + x2";
 
     cout<<"w1 = str + w3:   "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
@@ -89,7 +90,7 @@ void przyklady()
     string e;
     if (Polynomial::checkLastError(e)) cout<<e<<endl;
 
-    wielo1 = "2x^9 + 3x^23^1 - 4x-2sa + 8x2 + 7xx + x + x2x";
+    wielo1 = "2x^9 + 3x^23^1 - 4x-2sa + 8x2 + 7xx ++ x + x2x";
     if (Polynomial::checkLastError(e)) cout<<e<<endl<<endl;
 
     cout<<"w1 = po bledzie:   "<<wielo1.getDegree()<<",   "<<wielo1<<endl;

@@ -13,7 +13,7 @@
 #define MAX_DEGREE  8
 
 /*
-    ZASADA TWORZENIA OBIEKTOW KLASY STRING DO PRZEDSTAWIANIA WIELOMIANOW
+    ZASADA TWORZENIA CIAGU ZNAKOW DO PRZEDSTAWIANIA WIELOMIANOW
 
     - program pomija spacje
     - jeden string moze zawierac dowolna ilosc jednomianow
@@ -47,7 +47,8 @@ class Polynomial
 public:
 
     Polynomial();
-    Polynomial(std::string s);
+    Polynomial(const std::string s);
+    Polynomial(const char* s);
     Polynomial(const Polynomial& poly);
     Polynomial(int x);
 
@@ -63,12 +64,9 @@ public:
     inline bool operator != (const Polynomial& right) const;
 
     Polynomial& operator = (const Polynomial& right);
-    Polynomial& operator = (const std::string& right);
 
     Polynomial& operator += (const Polynomial& right);
     Polynomial& operator -= (const Polynomial& right);
-    Polynomial& operator += (const std::string& right);
-    Polynomial& operator -= (const std::string& right);
     Polynomial& operator *= (const int& right);
 
     friend std::ostream& operator << (std::ostream& out, const Polynomial& right);
@@ -92,12 +90,7 @@ private:
 Polynomial operator + (Polynomial left, const Polynomial& right);
 Polynomial operator - (Polynomial left, const Polynomial& right);
 
-Polynomial operator + (Polynomial left, const std::string& right);
-Polynomial operator - (Polynomial left, const std::string& right);
 Polynomial operator * (Polynomial left, const int& right);
-
-Polynomial operator + (const std::string& left, Polynomial right);
-Polynomial operator - (const std::string& left, Polynomial right);
 Polynomial operator * (const int& left, Polynomial right);
 
 std::ostream& operator << (std::ostream& out, const Polynomial& right);
