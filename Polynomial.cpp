@@ -121,21 +121,6 @@ bool Polynomial::checkLastError(string& getErrorMsg)
     return temp;
 }
 
-inline bool Polynomial::operator == (const Polynomial& right) const
-{
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
-    {
-        if (monomial[i] != right.monomial[i])
-            return false;
-    }
-    return true;
-}
-
-inline bool Polynomial::operator != (const Polynomial& right) const
-{
-    return !(*this == right);
-}
-
 Polynomial& Polynomial::operator = (Polynomial const &right)
 {
     for (int i = 0; i < MAX_DEGREE + 1; i++)
@@ -174,64 +159,6 @@ Polynomial& Polynomial::operator *= (const int& right)
     }
     checkDegree();
     return *this;
-}
-
-Polynomial operator + (Polynomial left, const Polynomial& right)
-{
-    return left += right;
-}
-
-Polynomial operator - (Polynomial left, const Polynomial& right)
-{
-    return left -= right;
-}
-
-Polynomial operator * (Polynomial left, const int& right)
-{
-    return left *= right;
-}
-
-Polynomial operator * (const int& left, Polynomial right)
-{
-    return right *= left;
-}
-
-ostream& operator << (ostream& out, const Polynomial& right)
-{
-    bool isFirst = true;
-    for (int i = MAX_DEGREE; i >= 0; i--)
-    {
-        if (right.monomial[i] != 0)
-        {
-            if (!isFirst) out << " ";
-            if (!isFirst && right.monomial[i] > 0) out << "+ ";
-
-            if (i == 0) out << right.monomial[i];
-            else
-            {
-                if (right.monomial[i] != 1 && right.monomial[i] != -1)
-                    out << right.monomial[i];
-                else if (right.monomial[i] == -1)
-                    out << "-";
-
-                out << "x";
-                if (i != 1) out << "^" << i;
-            }
-            isFirst = false;
-        }
-    }
-    if (right.polyDegree == 0 && right.monomial[0] == 0)
-        out << "0";
-
-    return out;
-}
-
-istream& operator >> (istream& in, Polynomial& right)
-{
-    string temp;
-    in >> temp;
-    right.setPolynomial(temp);
-    return in;
 }
 
 void Polynomial::resetValues()
@@ -414,4 +341,77 @@ int Polynomial::greatestCommonDivider(int a, int b)
         b = c;
     }
     return a;
+}
+
+bool operator == (const Polynomial& left, const Polynomial& right)
+{
+    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    {
+        if (left.monomial[i] != right.monomial[i])
+            return false;
+    }
+    return true;
+}
+
+bool operator != (const Polynomial& left, const Polynomial& right)
+{
+    return !(left == right);
+}
+
+Polynomial operator + (Polynomial left, const Polynomial& right)
+{
+    return left += right;
+}
+
+Polynomial operator - (Polynomial left, const Polynomial& right)
+{
+    return left -= right;
+}
+
+Polynomial operator * (Polynomial left, const int& right)
+{
+    return left *= right;
+}
+
+Polynomial operator * (const int& left, Polynomial right)
+{
+    return right *= left;
+}
+
+ostream& operator << (ostream& out, const Polynomial& right)
+{
+    bool isFirst = true;
+    for (int i = MAX_DEGREE; i >= 0; i--)
+    {
+        if (right.monomial[i] != 0)
+        {
+            if (!isFirst) out << " ";
+            if (!isFirst && right.monomial[i] > 0) out << "+ ";
+
+            if (i == 0) out << right.monomial[i];
+            else
+            {
+                if (right.monomial[i] != 1 && right.monomial[i] != -1)
+                    out << right.monomial[i];
+                else if (right.monomial[i] == -1)
+                    out << "-";
+
+                out << "x";
+                if (i != 1) out << "^" << i;
+            }
+            isFirst = false;
+        }
+    }
+    if (right.polyDegree == 0 && right.monomial[0] == 0)
+        out << "0";
+
+    return out;
+}
+
+istream& operator >> (istream& in, Polynomial& right)
+{
+    string temp;
+    in >> temp;
+    right.setPolynomial(temp);
+    return in;
 }

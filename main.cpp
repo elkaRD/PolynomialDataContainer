@@ -29,7 +29,13 @@ void przyklady()
     cout<<"w1 empty:        "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
     cout<<"w2 wielo(str):   "<<wielo2.getDegree()<<",   "<<wielo2<<endl;
     cout<<"w3 = wielo(w2):  "<<wielo3.getDegree()<<",   "<<wielo3<<endl;
+    cout<<"w1 == w2:        "<<(wielo1 == wielo2)<<endl;
+    cout<<"w2 == w3:        "<<(wielo2 != wielo3)<<endl;
+    cout<<"w3 == str:       "<<(wielo2 == "x^5 + 3x^4 - 5x^2 + 1")<<endl;
     cout<<endl;
+
+    if (wielo1 == wielo2)
+        if (wielo2 != wielo3);
 
     wielo1 = "-x^3 + 5x^2 + 2";
     wielo2 += wielo1;

@@ -60,14 +60,14 @@ public:
 
     static bool checkLastError(std::string& getErrorMsg);
 
-    inline bool operator == (const Polynomial& right) const;
-    inline bool operator != (const Polynomial& right) const;
-
     Polynomial& operator = (const Polynomial& right);
 
     Polynomial& operator += (const Polynomial& right);
     Polynomial& operator -= (const Polynomial& right);
     Polynomial& operator *= (const int& right);
+
+    friend bool operator == (const Polynomial& left, const Polynomial& right);
+    friend bool operator != (const Polynomial& left, const Polynomial& right);
 
     friend std::ostream& operator << (std::ostream& out, const Polynomial& right);
     friend std::istream& operator >> (std::istream& in, Polynomial& right);
@@ -86,6 +86,9 @@ private:
     void checkDegree();
     int greatestCommonDivider(int a, int b);
 };
+
+bool operator == (const Polynomial& left, const Polynomial& right);
+bool operator != (const Polynomial& left, const Polynomial& right);
 
 Polynomial operator + (Polynomial left, const Polynomial& right);
 Polynomial operator - (Polynomial left, const Polynomial& right);
