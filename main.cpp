@@ -8,6 +8,7 @@ using namespace std;
 
 void przyklady();
 void ui();
+//void testMnozenie();
 
 int main()
 {
@@ -127,7 +128,7 @@ void ui()
         cout << "Obecny wielomian: " << wielo << endl << endl;
         cout << "[1] Dodaj" << endl;
         cout << "[2] Odejmij" << endl;
-        cout << "[3] Pomnoz przez skalar" <<endl;
+        cout << "[3] Pomnoz" <<endl;
         cout << "[4] Pochodna" << endl;
         cout << "[5] Przypisz" << endl;
         cout << "[6] Zredukuj wspolcz" << endl;
@@ -166,12 +167,12 @@ void ui()
             }
         case 3:
             {
-                cout<<"Podaj skalar: ";
-                int temp;
+                Polynomial temp;
+                cout<<"Podaj wielomian: ";
                 cin.clear();
                 cin.ignore();
                 cin>>temp;
-                cout<<temp<<" * ("<<wielo<<")"<<endl;
+                cout<<"("<<temp<<") * ("<<wielo<<")"<<endl;
                 wielo *= temp;
                 break;
             }

@@ -30,7 +30,8 @@ Polynomial::Polynomial(const Polynomial& poly)
     {
         monomial[i] = poly.monomial[i];
     }
-    checkDegree();
+    polyDegree = poly.polyDegree;
+    //checkDegree();
 }
 
 Polynomial::Polynomial(int x)
@@ -152,7 +153,35 @@ Polynomial& Polynomial::operator -= (const Polynomial& right)
     return *this;
 }
 
-Polynomial& Polynomial::operator *= (const int& right)
+Polynomial& Polynomial::operator *= (const Polynomial& right)
+{
+    Polynomial temp;
+
+    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    {
+        for (int j = 0; j < MAX_DEGREE + 1; j++)
+        {
+            int newFactor = monomial[i] * right.monomial[j];
+            int newDegree = i + j;
+
+            if (newDegree > MAX_DEGREE && newFactor != 0)
+            {
+                isError = true;
+                errorMsg = "W wyniku mnozenia za wysokie jednomiany zostaly pominiete";
+            }
+            else
+            {
+                temp.monomial[newDegree] += newFactor;
+            }
+        }
+    }
+
+    temp.checkDegree();
+    *this = temp;
+    return *this;
+}
+
+/*Polynomial& Polynomial::operator *= (const int& right)
 {
     for (int i = 0; i < MAX_DEGREE + 1; i++)
     {
@@ -160,7 +189,7 @@ Polynomial& Polynomial::operator *= (const int& right)
     }
     checkDegree();
     return *this;
-}
+}*/
 
 void Polynomial::resetValues()
 {
@@ -196,6 +225,9 @@ void Polynomial::setPolynomial(string s)
 
             if (s[i] == ' ') continue;
             else hFirstChar = false;
+
+            if (isFirstChar && !hFirstChar && s[i] != '+' && s[i] != '-')
+                isFirstChar = false;
 
             if (s[i] == 'x')
             {
@@ -332,6 +364,7 @@ void Polynomial::checkDegree()
             return;
         }
     }
+    polyDegree = 0;
 }
 
 int Polynomial::greatestCommonDivider(int a, int b)
@@ -373,7 +406,12 @@ Polynomial operator - (Polynomial left, const Polynomial& right)
     return left -= right;
 }
 
-Polynomial operator * (Polynomial left, const int& right)
+Polynomial operator * (Polynomial left, const Polynomial& right)
+{
+    return left *= right;
+}
+
+/*Polynomial operator * (Polynomial left, const int& right)
 {
     return left *= right;
 }
@@ -381,7 +419,7 @@ Polynomial operator * (Polynomial left, const int& right)
 Polynomial operator * (const int& left, Polynomial right)
 {
     return right *= left;
-}
+}*/
 
 ostream& operator << (ostream& out, const Polynomial& right)
 {

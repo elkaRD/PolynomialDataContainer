@@ -64,7 +64,8 @@ public:
 
     Polynomial& operator += (const Polynomial& right);
     Polynomial& operator -= (const Polynomial& right);
-    Polynomial& operator *= (const int& right);
+    Polynomial& operator *= (const Polynomial& right);
+    //Polynomial& operator *= (const int& right);
 
     friend bool operator == (const Polynomial& left, const Polynomial& right);
     friend bool operator != (const Polynomial& left, const Polynomial& right);
@@ -93,8 +94,9 @@ bool operator != (const Polynomial& left, const Polynomial& right);
 Polynomial operator + (Polynomial left, const Polynomial& right);
 Polynomial operator - (Polynomial left, const Polynomial& right);
 
-Polynomial operator * (Polynomial left, const int& right);
-Polynomial operator * (const int& left, Polynomial right);
+//Polynomial operator * (Polynomial left, const int& right);
+//Polynomial operator * (const int& left, Polynomial right);
+Polynomial operator * (Polynomial left, const Polynomial& right);
 
 std::ostream& operator << (std::ostream& out, const Polynomial& right);
 std::istream& operator >> (std::istream& in, Polynomial& right);
