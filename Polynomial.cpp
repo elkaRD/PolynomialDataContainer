@@ -31,7 +31,6 @@ Polynomial::Polynomial(const Polynomial& poly)
         monomial[i] = poly.monomial[i];
     }
     polyDegree = poly.polyDegree;
-    //checkDegree();
 }
 
 Polynomial::Polynomial(int x)
@@ -181,16 +180,6 @@ Polynomial& Polynomial::operator *= (const Polynomial& right)
     return *this;
 }
 
-/*Polynomial& Polynomial::operator *= (const int& right)
-{
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
-    {
-        monomial[i] *= right;
-    }
-    checkDegree();
-    return *this;
-}*/
-
 void Polynomial::resetValues()
 {
     for (int i = 0; i < MAX_DEGREE + 1; i++)
@@ -203,141 +192,40 @@ void Polynomial::setPolynomial(string s)
 {
     resetValues();
 
-    string curDegree;
-    string curValue;
+    string curMono = "";
 
-    bool isValue = true;
-    bool isCorrect = true;
-    bool isFirstChar = true;
-    bool hFirstChar = true;
-    bool wasCaret = false;
-    bool wasX = false;
     bool newError = false;
-    string errorDetails = "";
     bool errorChar[s.size()];
+    string errorDetails = "";
 
     for (unsigned int i = 0; i < s.size() + 1; i++)
     {
         if (i != s.size())
         {
             errorChar[i] = false;
-            isFirstChar = hFirstChar;
-
-            if (s[i] == ' ') continue;
-            else hFirstChar = false;
-
-            if (isFirstChar && !hFirstChar && s[i] != '+' && s[i] != '-')
-                isFirstChar = false;
-
-            if (s[i] == 'x')
-            {
-                if (wasX)
-                {
-                    isCorrect = false;
-                    newError = true;
-                    errorChar[i] = true;
-
-                    errorDetails += "\n   znak " + to_string(i) + ": znak x wystapil juz w tym jednomianie";
-                }
-
-                wasX = true;
-                isValue = false;
-                continue;
-            }
-
-            if (s[i] == '^')
-            {
-                if (isValue || curDegree.size() != 0 || wasCaret)
-                {
-                    isCorrect = false;
-                    newError = true;
-                    errorChar[i] = true;
-
-                    errorDetails += "\n   znak " + to_string(i) + ": niepoprawne uzycie znaku ^";
-                }
-                wasCaret = true;
-                continue;
-            }
+            //if (s[i] == ' ') continue;
         }
 
         if (i == s.size() || s[i] == '+' || s[i] == '-')
         {
-            if ((curValue.size() == 0 || curValue.compare("-") == 0) && curDegree.size() == 0 && !wasX && i != 0)
+            int result = setMonomial(curMono, newError, errorDetails, i - curMono.size());
+
+            if (result >= 0)
             {
-                int index = i<1 ? 0 : i-1;
-                //int index=i;
-                isCorrect = false;
-                newError = true;
-                errorChar[index] = true;
-                errorDetails += "\n   znak " + to_string(index) + ": pojedynczy znak + lub -";
+                errorChar[result] = true;
             }
 
-            if (isCorrect && !isFirstChar)
+            if (i != s.size())
             {
-                int value;
-                if (curValue.size() == 0)
-                {
-                    value = 1;
-                }
-                else if (curValue.size() == 1 && curValue[0] == '-')
-                {
-                    value = -1;
-                }
-                else
-                {
-                    value = stoi(curValue);
-                }
-
-                if (isValue)
-                    monomial[0] +=  value;
-                else
-                {
-                    int degree;
-                    if (curDegree.size() == 0) degree = 1;
-                    else degree = stoi(curDegree);
-
-                    if (degree >= 0 && degree <= MAX_DEGREE)
-                    {
-                        monomial[degree] += value;
-                    }
-                    else
-                    {
-                        int index = i-1<0 ? 0 : i-1;
-                        newError = true;
-                        errorChar[index] = true;
-                        errorDetails += "\n   znak " + to_string(index) + ": niepoprawny wykladnik zmiennej x";
-                    }
-                }
+                curMono = s[i];
             }
-
-            isValue = true;
-            isCorrect = true;
-            wasCaret = false;
-            wasX = false;
-
-            curDegree.clear();
-            curValue.clear();
-
-            if (i != s.size() && s[i] == '-') curValue = "-";
-            continue;
         }
-
-        if (i != s.size())
+        else
         {
-            if (!(s[i] >= '0' && s[i] <= '9'))
-            {
-                isCorrect = false;
-                newError = true;
-                errorChar[i] = true;
-                errorDetails += "\n   znak " + to_string(i) + ": znak nie jest cyfra";
-            }
-
-            if (isValue)
-                curValue += s[i];
-            else
-                curDegree += s[i];
+            curMono += s[i];
         }
     }
+
     checkDegree();
 
     if (newError)
@@ -352,6 +240,203 @@ void Polynomial::setPolynomial(string s)
         }
         errorMsg += errorDetails + "\nNiepoprawne jednomiany zostaly pominiete.";
     }
+}
+
+int Polynomial::typeOfChar(char c)
+{
+    if (c >= '1' && c <= '9') return CNZ;
+    if (c == '0') return CZ;
+    if (c == 'x') return CX;
+    if (c == '+' || c == '-') return CPM;
+    if (c == '^') return CC;
+
+    return CE;
+}
+
+int Polynomial::nextState(int state, int c, int i, bool& newError, string& errorDetails)
+{
+    if (state == BEG)
+    {
+        switch (c)
+        {
+            case CPM: state = SPM; break;
+            case CNZ: state = SD;  break;
+            case CX:  state = X;   break;
+            default:
+                newError = true;
+                errorDetails += "\n   znak " + to_string(i) + ": niepoprawne rozpoczecie jednomianu";
+                return SE;
+        }
+        return state;
+    }
+    if (state == SPM)
+    {
+        switch (c)
+        {
+            case CNZ: state = SD; break;
+            case CX:  state = X;  break;
+            default:
+                newError = true;
+                errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
+                return SE;
+        }
+        return state;
+    }
+    if (state == SD)
+    {
+        switch (c)
+        {
+            case CZ: case CNZ: state = SN; break;
+            case CX: state = X; break;
+            default:
+                newError = true;
+                errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
+                return SE;
+        }
+        return state;
+    }
+    if (state == SN)
+    {
+        switch (c)
+        {
+            case CZ: state = SN; break;
+            case CX: state = X;  break;
+            default:
+                newError = true;
+                errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
+                return SE;
+        }
+        return state;
+    }
+    if (state == X)
+    {
+        switch (c)
+        {
+            case CC:  state = XC; break;
+            case CZ:  state = XZ; break;
+            case CNZ: state = XP; break;
+            default:
+                newError = true;
+                errorDetails += "\n   znak " + to_string(i) + ": powinien byc wykladnik";
+                return SE;
+        }
+        return state;
+    }
+    if (state == XC)
+    {
+        switch (c)
+        {
+            case CNZ: state = XP; break;
+            case CZ:  state = XZ; break;
+            default:
+                newError = true;
+                errorDetails += "\n   znak " + to_string(i) + ": powinien byc wykladnik";
+                return SE;
+        }
+        return state;
+    }
+    if (state == XP)
+    {
+        switch (c)
+        {
+            case CZ: case CNZ: state = XP; break;
+            default:
+                newError = true;
+                errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
+                return SE;
+        }
+        return state;
+    }
+
+    return SE;
+}
+
+int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int beginIt)
+{
+    int state = BEG;
+    bool isCorrect = true;
+    int beginExp = -1;
+    int caret = 0;
+
+    string curValue = "";
+    string curDegree = "";
+
+    for (unsigned int i = 0; i < s.size(); i++)
+    {
+        if (s[i] == ' ') continue;
+
+        int c = typeOfChar(s[i]);
+        state = nextState(state, c, beginIt + i, newError, errorDetails);
+
+        if ((state == SPM && s[i] == '-') || state == SD || state == SN)
+        {
+            curValue += s[i];
+        }
+        if (state == XZ || state == XP)
+        {
+            curDegree += s[i];
+            if (beginExp < 0) beginExp = i;
+        }
+        if (state == XC)
+        {
+            caret = i;
+        }
+        if (state == SE)
+        {
+            isCorrect = false;
+            return beginIt + i;
+        }
+    }
+
+    if (state == BEG || state == SPM)
+    {
+        newError = true;
+        errorDetails += "\n   znak " + to_string(beginIt + beginExp) + ": niepoprawny jednomian";
+        return beginIt;
+    }
+    if (state == XC)
+    {
+        newError = true;
+        errorDetails += "\n   znak " + to_string(beginIt + caret) + ": niepoprawne uzycie znaku ^";
+        return beginIt + caret;
+    }
+
+    if (isCorrect)
+    {
+        int value;
+        if (curValue.size() == 0)
+        {
+            value = 1;
+        }
+        else if (curValue.size() == 1 && curValue[0] == '-')
+        {
+            value = -1;
+        }
+        else
+        {
+            value = stoi(curValue);
+        }
+
+        if (state == SD || state == SN || state == XZ)
+            monomial[0] +=  value;
+        if (state == X)
+            monomial[1] += value;
+        if (state == XP)
+        {
+            int degree = stoi(curDegree);
+            if (degree >= 0 && degree <= MAX_DEGREE)
+            {
+                monomial[degree] += value;
+            }
+            else
+            {
+                newError = true;
+                errorDetails += "\n   znak " + to_string(beginIt + beginExp) + ": niepoprawny wykladnik zmiennej x";
+                return beginIt + beginExp;
+            }
+        }
+    }
+    return -1;
 }
 
 void Polynomial::checkDegree()
@@ -410,16 +495,6 @@ Polynomial operator * (Polynomial left, const Polynomial& right)
 {
     return left *= right;
 }
-
-/*Polynomial operator * (Polynomial left, const int& right)
-{
-    return left *= right;
-}
-
-Polynomial operator * (const int& left, Polynomial right)
-{
-    return right *= left;
-}*/
 
 ostream& operator << (ostream& out, const Polynomial& right)
 {

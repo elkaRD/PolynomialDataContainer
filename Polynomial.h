@@ -28,7 +28,7 @@
     lub
     [LICZBA_CALK1] x^ [LICZBA_CALK2]
     lub
-    [LICZBA_CALK1] x   lub   [LICZBA_CALK1] x^  - zmienna x w stopniu pierwszym
+    [LICZBA_CALK1] x                            - zmienna x w stopniu pierwszym
     lub
     x                                           - zmienna x w stopniu pierwszym; wspolczynnik wynosi 1
     lub
@@ -65,7 +65,6 @@ public:
     Polynomial& operator += (const Polynomial& right);
     Polynomial& operator -= (const Polynomial& right);
     Polynomial& operator *= (const Polynomial& right);
-    //Polynomial& operator *= (const int& right);
 
     friend bool operator == (const Polynomial& left, const Polynomial& right);
     friend bool operator != (const Polynomial& left, const Polynomial& right);
@@ -82,8 +81,34 @@ private:
     static bool isError;
     static std::string errorMsg;
 
+    enum State
+    {
+        BEG,        //beginning
+        SPM,        //single plus minus
+        SD,         //single non-zero digit
+        SN,         //single number
+        X,          //single x
+        XC,         //x and caret
+        XZ,         //x power 0
+        XP,         //x power non 0
+        SE          //state error
+    };
+
+    enum CharType
+    {
+        CPM,        //plus minus
+        CNZ,        //non zero digit
+        CZ,         //zero digit
+        CX,         //x
+        CC,         //caret
+        CE          //different
+    };
+
     void resetValues();
     void setPolynomial(std::string s);
+    int typeOfChar(char c);
+    int nextState(int state, int c, int i, bool& newError, std::string& errorDetails);
+    int setMonomial(std::string s, bool& newError, std::string& errorDetails, int beginIt);
     void checkDegree();
     int greatestCommonDivider(int a, int b);
 };
@@ -94,8 +119,6 @@ bool operator != (const Polynomial& left, const Polynomial& right);
 Polynomial operator + (Polynomial left, const Polynomial& right);
 Polynomial operator - (Polynomial left, const Polynomial& right);
 
-//Polynomial operator * (Polynomial left, const int& right);
-//Polynomial operator * (const int& left, Polynomial right);
 Polynomial operator * (Polynomial left, const Polynomial& right);
 
 std::ostream& operator << (std::ostream& out, const Polynomial& right);
