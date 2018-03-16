@@ -156,17 +156,18 @@ Polynomial& Polynomial::operator *= (const Polynomial& right)
 {
     Polynomial temp;
 
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    for (int i = 0; i < polyDegree + 1; i++)
     {
-        for (int j = 0; j < MAX_DEGREE + 1; j++)
+        for (int j = 0; j < right.polyDegree + 1; j++)
         {
             int newFactor = monomial[i] * right.monomial[j];
             int newDegree = i + j;
 
-            if (newDegree > MAX_DEGREE && newFactor != 0)
+            if (newDegree > MAX_DEGREE)
             {
                 isError = true;
                 errorMsg = "W wyniku mnozenia za wysokie jednomiany zostaly pominiete";
+                break;
             }
             else
             {
@@ -245,10 +246,10 @@ void Polynomial::setPolynomial(string s)
 int Polynomial::typeOfChar(char c)
 {
     if (c >= '1' && c <= '9') return CNZ;
-    if (c == '0') return CZ;
-    if (c == 'x') return CX;
+    if (c == '0')             return CZ;
+    if (c == 'x')             return CX;
     if (c == '+' || c == '-') return CPM;
-    if (c == '^') return CC;
+    if (c == '^')             return CC;
 
     return CE;
 }
@@ -262,6 +263,7 @@ int Polynomial::nextState(int state, int c, int i, bool& newError, string& error
             case CPM: state = SPM; break;
             case CNZ: state = SD;  break;
             case CX:  state = X;   break;
+            case CZ:  state = SZ;  break;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": niepoprawne rozpoczecie jednomianu";
@@ -275,6 +277,7 @@ int Polynomial::nextState(int state, int c, int i, bool& newError, string& error
         {
             case CNZ: state = SD; break;
             case CX:  state = X;  break;
+            case CZ:  state = SZ; break;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
@@ -304,6 +307,18 @@ int Polynomial::nextState(int state, int c, int i, bool& newError, string& error
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
+                return SE;
+        }
+        return state;
+    }
+    if (state == SZ)
+    {
+        switch (c)
+        {
+            case CX: state = X; break;
+            default:
+                newError = true;
+                errorDetails += "\n   znak " + to_string(i) + ": powinien byc x";
                 return SE;
         }
         return state;
@@ -368,7 +383,7 @@ int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int 
         int c = typeOfChar(s[i]);
         state = nextState(state, c, beginIt + i, newError, errorDetails);
 
-        if ((state == SPM && s[i] == '-') || state == SD || state == SN)
+        if ((state == SPM && s[i] == '-') || state == SD || state == SN || state == SZ)
         {
             curValue += s[i];
         }
@@ -390,8 +405,11 @@ int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int 
 
     if (state == BEG || state == SPM)
     {
+        int index = beginIt + beginExp;
+        if (index < 0) return -1;
+
         newError = true;
-        errorDetails += "\n   znak " + to_string(beginIt + beginExp) + ": niepoprawny jednomian";
+        errorDetails += "\n   znak " + to_string(index) + ": niepoprawny jednomian";
         return beginIt;
     }
     if (state == XC)
@@ -403,40 +421,49 @@ int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int 
 
     if (isCorrect)
     {
-        int value;
-        if (curValue.size() == 0)
+        if (addMonomial(curValue, curDegree, state, newError, errorDetails))
         {
-            value = 1;
-        }
-        else if (curValue.size() == 1 && curValue[0] == '-')
-        {
-            value = -1;
-        }
-        else
-        {
-            value = stoi(curValue);
-        }
-
-        if (state == SD || state == SN || state == XZ)
-            monomial[0] +=  value;
-        if (state == X)
-            monomial[1] += value;
-        if (state == XP)
-        {
-            int degree = stoi(curDegree);
-            if (degree >= 0 && degree <= MAX_DEGREE)
-            {
-                monomial[degree] += value;
-            }
-            else
-            {
-                newError = true;
-                errorDetails += "\n   znak " + to_string(beginIt + beginExp) + ": niepoprawny wykladnik zmiennej x";
-                return beginIt + beginExp;
-            }
+            newError = true;
+            errorDetails += "\n   znak " + to_string(beginIt + beginExp) + ": niepoprawny wykladnik zmiennej x";
+            return beginIt + beginExp;
         }
     }
     return -1;
+}
+
+int Polynomial::addMonomial(string curValue, string curDegree, int state, bool& newError, string& errorDetails)
+{
+    int value;
+    if (curValue.size() == 0)
+    {
+        value = 1;
+    }
+    else if (curValue.size() == 1 && curValue[0] == '-')
+    {
+        value = -1;
+    }
+    else
+    {
+        value = stoi(curValue);
+    }
+
+    if (state == SD || state == SN || state == XZ)
+        monomial[0] +=  value;
+    if (state == X)
+        monomial[1] += value;
+    if (state == XP)
+    {
+        int degree = stoi(curDegree);
+        if (degree >= 0 && degree <= MAX_DEGREE)
+        {
+            monomial[degree] += value;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 void Polynomial::checkDegree()

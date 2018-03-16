@@ -91,6 +91,7 @@ private:
         XC,         //x and caret
         XZ,         //x power 0
         XP,         //x power non 0
+        SZ,         //single 0
         SE          //state error
     };
 
@@ -109,6 +110,7 @@ private:
     int typeOfChar(char c);
     int nextState(int state, int c, int i, bool& newError, std::string& errorDetails);
     int setMonomial(std::string s, bool& newError, std::string& errorDetails, int beginIt);
+    int addMonomial(std::string curValue, std::string curDegree, int state, bool& newError, std::string& errorDetails);
     void checkDegree();
     int greatestCommonDivider(int a, int b);
 };
