@@ -369,7 +369,6 @@ int Polynomial::nextState(int state, int c, int i, bool& newError, string& error
 int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int beginIt)
 {
     int state = BEG;
-    bool isCorrect = true;
     int beginExp = -1;
     int caret = 0;
 
@@ -398,7 +397,6 @@ int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int 
         }
         if (state == SE)
         {
-            isCorrect = false;
             return beginIt + i;
         }
     }
@@ -419,15 +417,13 @@ int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int 
         return beginIt + caret;
     }
 
-    if (isCorrect)
+    if (addMonomial(curValue, curDegree, state, newError, errorDetails))
     {
-        if (addMonomial(curValue, curDegree, state, newError, errorDetails))
-        {
-            newError = true;
-            errorDetails += "\n   znak " + to_string(beginIt + beginExp) + ": niepoprawny wykladnik zmiennej x";
-            return beginIt + beginExp;
-        }
+        newError = true;
+        errorDetails += "\n   znak " + to_string(beginIt + beginExp) + ": niepoprawny wykladnik zmiennej x";
+        return beginIt + beginExp;
     }
+
     return -1;
 }
 
