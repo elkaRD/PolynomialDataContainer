@@ -50,12 +50,12 @@ public:
     Polynomial(const std::string s);
     Polynomial(const char* s);
     Polynomial(const Polynomial& poly);
-    Polynomial(int x);
+    Polynomial(const int x);
 
     void derivative();
-    int getDegree();
-    int calc(int x);
-    int getFactor(int x);
+    int getDegree() const;
+    int calc(const int x) const;
+    int getFactor(const int x) const;
     void reduceFactors();
 
     static bool checkLastError(std::string& getErrorMsg);
@@ -106,13 +106,13 @@ private:
     };
 
     void resetValues();
-    void setPolynomial(std::string s);
-    int typeOfChar(char c);
-    int nextState(int state, int c, int i, bool& newError, std::string& errorDetails);
-    int setMonomial(std::string s, bool& newError, std::string& errorDetails, int beginIt);
-    int addMonomial(std::string curValue, std::string curDegree, int state, bool& newError, std::string& errorDetails);
+    void setPolynomial(const std::string s);
+    int typeOfChar(const char c) const;
+    int nextState(const int state, const int c, const int i, bool& newError, std::string& errorDetails) const;
+    int setMonomial(const std::string s, bool& newError, std::string& errorDetails, const int beginIt);
+    int addMonomial(const std::string curValue, const std::string curDegree, const int state);
     void checkDegree();
-    int greatestCommonDivider(int a, int b);
+    int greatestCommonDivider(int a, int b) const;
 };
 
 bool operator == (const Polynomial& left, const Polynomial& right);

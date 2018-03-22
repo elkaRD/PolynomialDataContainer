@@ -33,7 +33,7 @@ Polynomial::Polynomial(const Polynomial& poly)
     polyDegree = poly.polyDegree;
 }
 
-Polynomial::Polynomial(int x)
+Polynomial::Polynomial(const int x)
 {
     resetValues();
     monomial[0] = x;
@@ -49,12 +49,12 @@ void Polynomial::derivative()
     checkDegree();
 }
 
-int Polynomial::getDegree()
+int Polynomial::getDegree() const
 {
     return polyDegree;
 }
 
-int Polynomial::calc(int x)
+int Polynomial::calc(const int x) const
 {
     int sum = 0;
     int arg = 1;
@@ -68,7 +68,7 @@ int Polynomial::calc(int x)
     return sum;
 }
 
-int Polynomial::getFactor(int x)
+int Polynomial::getFactor(const int x) const
 {
     if (x >= 0 && x<= MAX_DEGREE)
     {
@@ -189,7 +189,7 @@ void Polynomial::resetValues()
     polyDegree = 0;
 }
 
-void Polynomial::setPolynomial(string s)
+void Polynomial::setPolynomial(const string s)
 {
     resetValues();
 
@@ -204,7 +204,6 @@ void Polynomial::setPolynomial(string s)
         if (i != s.size())
         {
             errorChar[i] = false;
-            //if (s[i] == ' ') continue;
         }
 
         if (i == s.size() || s[i] == '+' || s[i] == '-')
@@ -243,7 +242,7 @@ void Polynomial::setPolynomial(string s)
     }
 }
 
-int Polynomial::typeOfChar(char c)
+int Polynomial::typeOfChar(const char c) const
 {
     if (c >= '1' && c <= '9') return CNZ;
     if (c == '0')             return CZ;
@@ -254,7 +253,7 @@ int Polynomial::typeOfChar(char c)
     return CE;
 }
 
-int Polynomial::nextState(int state, int c, int i, bool& newError, string& errorDetails)
+int Polynomial::nextState(const int state, const int c, const int i, bool& newError, string& errorDetails) const
 {
     if (state == BEG)
     {
@@ -358,7 +357,7 @@ int Polynomial::nextState(int state, int c, int i, bool& newError, string& error
     return SE;
 }
 
-int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int beginIt)
+int Polynomial::setMonomial(const string s, bool& newError, string& errorDetails, const int beginIt)
 {
     int state = BEG;
     int beginExp = -1;
@@ -415,7 +414,7 @@ int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int 
         return beginIt + caret;
     }
 
-    if (addMonomial(curValue, curDegree, state, newError, errorDetails))
+    if (addMonomial(curValue, curDegree, state))
     {
         newError = true;
         errorDetails += "\n   znak " + to_string(beginIt + beginExp) + ": niepoprawny wykladnik zmiennej x";
@@ -425,7 +424,7 @@ int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int 
     return -1;
 }
 
-int Polynomial::addMonomial(string curValue, string curDegree, int state, bool& newError, string& errorDetails)
+int Polynomial::addMonomial(const string curValue, const string curDegree, const int state)
 {
     int value;
     if (curValue.size() == 0)
@@ -473,7 +472,7 @@ void Polynomial::checkDegree()
     polyDegree = 0;
 }
 
-int Polynomial::greatestCommonDivider(int a, int b)
+int Polynomial::greatestCommonDivider(int a, int b) const
 {
     if (a < 0) a *= -1;
     if (b < 0) b *= -1;

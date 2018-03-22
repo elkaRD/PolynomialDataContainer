@@ -2,11 +2,11 @@
 1521721938 source:/home/robert/Desktop/wielomian/main.cpp
 	"Polynomial.h"
 
-1521206141 /home/robert/Desktop/wielomian/Polynomial.h
+1521757965 /home/robert/Desktop/wielomian/Polynomial.h
 	<iostream>
 	<cstdlib>
 	<string>
 
-1521721858 source:/home/robert/Desktop/wielomian/Polynomial.cpp
+1521758342 source:/home/robert/Desktop/wielomian/Polynomial.cpp
 	"Polynomial.h"
 
