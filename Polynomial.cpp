@@ -260,107 +260,99 @@ int Polynomial::nextState(int state, int c, int i, bool& newError, string& error
     {
         switch (c)
         {
-            case CPM: state = SPM; break;
-            case CNZ: state = SD;  break;
-            case CX:  state = X;   break;
-            case CZ:  state = SZ;  break;
+            case CPM: return SPM;
+            case CNZ: return SD;
+            case CX:  return X;
+            case CZ:  return SZ;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": niepoprawne rozpoczecie jednomianu";
                 return SE;
         }
-        return state;
     }
     if (state == SPM)
     {
         switch (c)
         {
-            case CNZ: state = SD; break;
-            case CX:  state = X;  break;
-            case CZ:  state = SZ; break;
+            case CNZ: return SD;
+            case CX:  return X;
+            case CZ:  return SZ;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
                 return SE;
         }
-        return state;
     }
     if (state == SD)
     {
         switch (c)
         {
-            case CZ: case CNZ: state = SN; break;
-            case CX: state = X; break;
+            case CZ: case CNZ: return SN;
+            case CX:           return X;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
                 return SE;
         }
-        return state;
     }
     if (state == SN)
     {
         switch (c)
         {
-            case CZ: state = SN; break;
-            case CX: state = X;  break;
+            case CZ: return SN;
+            case CX: return X;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
                 return SE;
         }
-        return state;
     }
     if (state == SZ)
     {
         switch (c)
         {
-            case CX: state = X; break;
+            case CX: return X;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinien byc x";
                 return SE;
         }
-        return state;
     }
     if (state == X)
     {
         switch (c)
         {
-            case CC:  state = XC; break;
-            case CZ:  state = XZ; break;
-            case CNZ: state = XP; break;
+            case CC:  return XC;
+            case CZ:  return XZ;
+            case CNZ: return XP;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinien byc wykladnik";
                 return SE;
         }
-        return state;
     }
     if (state == XC)
     {
         switch (c)
         {
-            case CNZ: state = XP; break;
-            case CZ:  state = XZ; break;
+            case CNZ: return XP;
+            case CZ:  return XZ;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinien byc wykladnik";
                 return SE;
         }
-        return state;
     }
     if (state == XP)
     {
         switch (c)
         {
-            case CZ: case CNZ: state = XP; break;
+            case CZ: case CNZ: return XP;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
                 return SE;
         }
-        return state;
     }
 
     return SE;
