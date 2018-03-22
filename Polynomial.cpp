@@ -393,13 +393,19 @@ int Polynomial::setMonomial(string s, bool& newError, string& errorDetails, int 
         }
     }
 
-    if (state == BEG || state == SPM)
+    if (state == BEG)
     {
         int index = beginIt + beginExp;
         if (index < 0) return -1;
 
         newError = true;
         errorDetails += "\n   znak " + to_string(index) + ": niepoprawny jednomian";
+        return beginIt;
+    }
+    if (state == SPM)
+    {
+        newError = true;
+        errorDetails += "\n   znak " + to_string(beginIt) + ": pojedynczy znak + lub -";
         return beginIt;
     }
     if (state == XC)
