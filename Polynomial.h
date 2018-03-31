@@ -42,6 +42,25 @@
 
 */
 
+
+
+/*class FactorMap
+{
+public:
+    FactorMap();
+    ~FactorMap();
+
+    Factor& operator [] (const int i);
+    //const Factor& operator [] (const int i) const;
+
+private:
+
+    Factor* first;
+    Factor* last;
+
+    Factor* factors;
+};*/
+
 class Polynomial
 {
 public:
@@ -52,6 +71,8 @@ public:
     Polynomial(const Polynomial& poly);
     Polynomial(const int x);
 
+    ~Polynomial();
+
     void derivative();
     int getDegree() const;
     int calc(const int x) const;
@@ -61,9 +82,9 @@ public:
     static bool checkLastError(std::string& getErrorMsg);
 
     Polynomial& operator = (const Polynomial& right);
-
     Polynomial& operator += (const Polynomial& right);
     Polynomial& operator -= (const Polynomial& right);
+
     Polynomial& operator *= (const Polynomial& right);
 
     friend bool operator == (const Polynomial& left, const Polynomial& right);
@@ -75,11 +96,34 @@ public:
 
 private:
 
-    int monomial[MAX_DEGREE + 1];
+    //int monomial[MAX_DEGREE + 1];
     int polyDegree;
 
     static bool isError;
     static std::string errorMsg;
+
+    class Factor
+    {
+    public:
+        Factor(const int pos);
+        Factor();
+
+        int value;
+        int degree;
+
+        Factor* next;
+        Factor* prev;
+    };
+
+    Factor* first = nullptr;
+    Factor* last = nullptr;
+
+    Factor* addFactor(const int deg);
+    Factor* addFactor(const int deg, Factor** after);
+    Factor* addFactor(const int deg, const int value);
+    void addToFactor(const int deg, const int value);
+    Factor* freeFactor(Factor** temp);
+    void clearMemory();
 
     enum State
     {
@@ -104,6 +148,13 @@ private:
         CC,         //caret
         CE          //different
     };
+
+    enum ModifyMode
+    {
+        ADD,
+        SUBTRACT
+    };
+    Polynomial& modifyFactors(const Polynomial& right, const ModifyMode mode);
 
     void resetValues();
     void setPolynomial(const std::string s);

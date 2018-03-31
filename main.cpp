@@ -15,8 +15,19 @@ int main()
     cout << "   Projekt PROI - Operacje na wielomianach" <<endl;
     cout << "   Robert Dudzinski" <<endl;
 
+    /*Polynomial wielo2("x^5 + 3x^4 - 5x^2 + 1 + x2");
+    cout<<wielo2.getDegree()<<": "<<wielo2<<"   "<<wielo2.calc(2)<<endl;
+    wielo2 += "x6 + x7+4x2";
+    cout<<wielo2.getDegree()<<": "<<wielo2<<"    "<<wielo2.calc(2)<<endl;
+    wielo2 = "5x2+10x10+15";
+    cout<<wielo2.getDegree()<<": "<<wielo2<<"     "<<wielo2.calc(2)<<endl;
+    wielo2.reduceFactors();
+    cout<<wielo2.getDegree()<<": "<<wielo2<<"     "<<wielo2.calc(2)<<endl;
+    wielo2.derivative();
+    cout<<wielo2.getDegree()<<": "<<wielo2<<"     "<<wielo2.calc(2)<<endl;*/
+
     przyklady();
-    ui();
+    //ui();
 
     return 0;
 }

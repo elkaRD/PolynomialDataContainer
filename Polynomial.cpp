@@ -9,43 +9,130 @@ using namespace std;
 bool Polynomial::isError = false;
 string Polynomial::errorMsg = "";
 
-Polynomial::Polynomial ()
+Polynomial::Factor::Factor(const int pos)
+{
+    degree = pos;
+    value = 0;
+    next = nullptr;
+    prev = nullptr;
+}
+
+Polynomial::Factor::Factor()
+{
+    value = 0;
+    next = nullptr;
+    prev = nullptr;
+}
+
+/*FactorMap::FactorMap()
+{
+
+}
+
+FactorMap::~FactorMap()
+{
+
+}
+
+Factor& FactorMap::operator[](const int i)
+{
+    if (first == nullptr)
+    {
+        first = last = new Factor(i);
+        return *first;
+    }
+
+    for (Factor* cur = first; cur != last; cur = cur->next)
+    {
+        if (cur->position == i)
+        {
+            return *cur;
+        }
+        if (cur->position > i)
+        {
+            Factor* temp = cur->prev;
+
+            temp->next = cur->prev = new Factor(i);
+            temp->next->prev = temp;
+            temp->next->next = cur;
+
+            return *temp->next;
+        }
+    }
+
+    Factor* temp = last;
+    last = temp->next = new Factor(i);
+    last->prev = temp;
+
+    return *last;
+}*/
+
+Polynomial::Polynomial ()//TODO
 {
     resetValues();
 }
 
 Polynomial::Polynomial(const char* s)
 {
+    //clearMemory();
     setPolynomial(s);
 }
 
 Polynomial::Polynomial (const string s)
 {
+    //clearMemory();
     setPolynomial(s);
 }
 
-Polynomial::Polynomial(const Polynomial& poly)
+Polynomial::Polynomial(const Polynomial& poly)//TODO
 {
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    /*for (int i = 0; i < MAX_DEGREE + 1; i++)
     {
         monomial[i] = poly.monomial[i];
     }
-    polyDegree = poly.polyDegree;
+    polyDegree = poly.polyDegree;*/
+
+    *this = poly;
 }
 
-Polynomial::Polynomial(const int x)
+Polynomial::Polynomial(const int x)//TODO
 {
+    //resetValues();
+    //monomial[0] = x;
+
     resetValues();
-    monomial[0] = x;
+    addFactor(0, x);
+}
+
+Polynomial::~Polynomial()
+{
+    clearMemory();
 }
 
 void Polynomial::derivative()
 {
-    for (int i = 0; i < MAX_DEGREE; i++)
+    /*for (int i = 0; i < MAX_DEGREE; i++)
     {
         monomial[i] = monomial[i+1] * (i + 1);
     }
     monomial[MAX_DEGREE] = 0;
+    checkDegree();*/
+
+    Factor* cur = first;
+    while (cur != nullptr)
+    {
+        if (cur->degree > 0)
+        {
+            cur->value = cur->degree * cur->value;
+            cur->degree--;
+        }
+        else
+        {
+            freeFactor(&cur);
+        }
+
+        cur = cur->next;
+    }
     checkDegree();
 }
 
@@ -58,11 +145,26 @@ int Polynomial::calc(const int x) const
 {
     int sum = 0;
     int arg = 1;
+    int prevPower = 0;
 
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    /*for (int i = 0; i < MAX_DEGREE + 1; i++)
     {
         sum += arg * monomial[i];
         arg *= x;
+    }*/
+
+    Factor* cur = first;
+    while (cur != nullptr)
+    {
+        int addPower = cur->degree - prevPower;
+        prevPower = cur->degree;
+
+        for (int i = 0; i < addPower; i++)
+            arg *= x;
+
+        sum += arg * cur->value;
+
+        cur = cur->next;
     }
 
     return sum;
@@ -70,9 +172,16 @@ int Polynomial::calc(const int x) const
 
 int Polynomial::getFactor(const int x) const
 {
-    if (x >= 0 && x<= MAX_DEGREE)
+    if (x >= 0)
     {
-        return monomial[x];
+        Factor* cur = first;
+        while (cur != nullptr)
+        {
+            if (cur->degree == x) return cur->value;
+            if (cur->degree > x) return 0;
+
+            cur = cur->next;
+        }
     }
     else
     {
@@ -87,26 +196,33 @@ void Polynomial::reduceFactors()
     bool isBegin = true;
     int gcd = 1;
 
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    //for (int i = 0; i < MAX_DEGREE + 1; i++)
+    Factor* cur = first;
+    while (cur != nullptr)
     {
-        if (monomial[i] != 0)
+        if (cur->value != 0)
         {
             if (isBegin)
             {
                 isBegin = false;
-                gcd = monomial[i];
+                gcd = cur->value;
                 if (gcd < 0) gcd *= -1;
             }
             else
             {
-                gcd = greatestCommonDivider(gcd, monomial[i]);
+                gcd = greatestCommonDivider(gcd, cur->value);
             }
         }
+
+        cur = cur->next;
     }
 
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    //for (int i = 0; i < MAX_DEGREE + 1; i++)
+    cur = first;
+    while (cur != nullptr)
     {
-        monomial[i] /= gcd;
+        cur->value /= gcd;
+        cur = cur->next;
     }
 }
 
@@ -122,41 +238,102 @@ bool Polynomial::checkLastError(string& getErrorMsg)
     return temp;
 }
 
+Polynomial& Polynomial::modifyFactors(const Polynomial& right, const ModifyMode mode)
+{
+    Factor* curL = first;
+    Factor* curR = right.first;
+    while (curR != nullptr)
+    {
+        if (curL != nullptr)
+        {
+            while (curL != nullptr && curR->degree > curL->degree)
+            {
+                //cout<<"loop l deg "<<curL->degree<<"    l val "<<curL->value<<"    "<<curL->next<<endl;
+                curL = curL->next;
+            }
+            if (curL == nullptr)
+            {
+                curL = addFactor(curR->degree);
+            }
+            else if (curL->degree > curR->degree)
+            {
+                curL = addFactor(curR->degree, &curL);
+            }
+        }
+        else
+        {
+            curL = addFactor(curR->degree);
+        }
+        if (mode == ADD)
+            curL->value += curR->value;
+        else if (mode == SUBTRACT)
+            curL->value -= curR->value;
+
+        if (curL->value == 0)
+        {
+            curL = freeFactor(&curL);
+        }
+
+        curR = curR->next;
+    }
+    checkDegree();
+
+    return *this;
+}
+
 Polynomial& Polynomial::operator = (Polynomial const &right)
 {
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    /*for (int i = 0; i < MAX_DEGREE + 1; i++)
     {
         monomial[i] = right.monomial[i];
     }
-    checkDegree();
+    checkDegree();*/
+
+    clearMemory();
+
+    //Factor* last;
+    Factor* curR = right.first;
+    while (curR != nullptr)
+    {
+        addFactor(curR->degree, curR->value);
+
+        curR = curR->next;
+    }
+    polyDegree = right.polyDegree;
+    //cout<<"last: "<<last<<"   "<<last->next<<endl;
+
     return *this;
 }
 
 Polynomial& Polynomial::operator += (const Polynomial& right)
 {
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    /*for (int i = 0; i < MAX_DEGREE + 1; i++)
     {
         monomial[i] += right.monomial[i];
     }
     checkDegree();
-    return *this;
+    return *this;*/
+
+    return modifyFactors(right, ADD);
 }
 
 Polynomial& Polynomial::operator -= (const Polynomial& right)
 {
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    /*for (int i = 0; i < MAX_DEGREE + 1; i++)
     {
         monomial[i] -= right.monomial[i];
     }
     checkDegree();
-    return *this;
+    return *this;*/
+
+    return modifyFactors(right, SUBTRACT);
 }
 
 Polynomial& Polynomial::operator *= (const Polynomial& right)
 {
     Polynomial temp;
 
-    for (int i = 0; i < polyDegree + 1; i++)
+    /*for (int i = 0; i < polyDegree + 1; i++)
     {
         for (int j = 0; j < right.polyDegree + 1; j++)
         {
@@ -174,6 +351,24 @@ Polynomial& Polynomial::operator *= (const Polynomial& right)
                 temp.monomial[newDegree] += newFactor;
             }
         }
+    }*/
+
+    Factor* curL = first;
+    while (curL != nullptr)
+    {
+        Factor* curR = right.first;
+        while (curR != nullptr)
+        {
+            //int newFactor = curL->value * curR->value;
+            //int newDegree = curL->degree + curR->degree;
+
+            //temp.monomial[newDegree] += newFactor;
+            temp.addToFactor(curL->degree + curR->degree, curL->value * curR->value);
+
+            curR = curR->next;
+        }
+
+        curL = curL->next;
     }
 
     temp.checkDegree();
@@ -181,12 +376,160 @@ Polynomial& Polynomial::operator *= (const Polynomial& right)
     return *this;
 }
 
+Polynomial::Factor* Polynomial::addFactor(const int deg)
+{
+    if (first == nullptr)
+    {
+        first = last = new Factor(deg);
+        //first->prev = nullptr;
+        //last->next = nullptr;
+
+        //cout<<"test1: "<<first->prev<<"   "<<first<<"   "<<last<<"    "<<last->next<<endl;
+
+        return first;
+    }
+
+    Factor* temp = last;
+    last = temp->next = new Factor(deg);
+    last->prev = temp;
+    //last->next = nullptr;
+
+    //cout<<"test2: "<<first->prev<<"   "<<first<<"   "<<last<<"    "<<last->next<<endl;
+
+    //cout<<"addfactor: "<<last<<"     "<<last->next<<endl;
+
+    return last;
+}
+
+Polynomial::Factor* Polynomial::addFactor(const int deg, Polynomial::Factor** after)
+{
+    Factor* temp = (*after)->prev;
+
+    if (temp == nullptr)
+    {
+        first = new Factor(deg);
+        first->next = *after;
+        (*after)->prev = first;
+
+        return first;
+    }
+
+    temp->next = (*after)->prev = new Factor(deg);
+    temp->next->prev = temp;
+    temp->next->next = *after;
+
+    return temp->next;
+}
+
+Polynomial::Factor* Polynomial::addFactor(const int deg, const int value)
+{
+    Factor* temp = addFactor(deg);
+    temp->value = value;
+
+    //cout<<"temp: "<<temp<<"    "<<temp->next<<endl;
+
+    return temp;
+}
+
+void Polynomial::addToFactor(const int deg, const int value)
+{
+    if (first == nullptr)
+    {
+        first = last = new Factor(deg);
+        first->value += value;
+        return;
+    }
+
+    for (Factor* cur = first; cur != nullptr; cur = cur->next)
+    {
+        if (cur->degree == deg)
+        {
+            cur->value += value;
+            return;
+        }
+        if (cur->degree > deg)
+        {
+            Factor* newFactor = new Factor(deg);
+            Factor* prev = cur->prev;
+
+            if (prev != NULL)
+            {
+                prev->next = newFactor;
+            }
+            else
+            {
+                first = newFactor;
+            }
+            cur->prev = newFactor;
+
+            newFactor->prev = prev;
+            newFactor->next = cur;
+
+            newFactor->value += value;
+            return;
+        }
+    }
+
+    Factor* prev = last;
+    prev->next = new Factor(deg);
+    prev->next->prev = prev;
+    last = prev->next;
+
+    last->value += value;
+}
+
+Polynomial::Factor* Polynomial::freeFactor(Polynomial::Factor** temp)
+{
+    Factor* prev = (*temp)->prev;
+    if (prev == nullptr)
+    {
+        first = (*temp)->next;
+        first->prev = nullptr;
+    }
+    else
+    {
+        prev->next = (*temp)->next;
+    }
+
+    if ((*temp)->next == nullptr)
+    {
+        last = prev;
+        last->next = nullptr;
+    }
+    else
+    {
+        (*temp)->next->prev = prev;
+    }
+
+    delete *temp;
+
+    if (prev!=nullptr)
+    //cout<<"prev:   deg: "<<prev->degree<<"    val: "<<prev->value<<"   "<<prev->next<<endl;
+    if (prev == nullptr) return first;
+    return prev;
+}
+
+void Polynomial::clearMemory()
+{
+    Factor* temp = first;
+    while (first != nullptr)
+    {
+        temp = first;
+        first = first->next;
+        delete temp;
+    }
+    first = nullptr;
+    last = nullptr;
+    polyDegree = 0;
+}
+
 void Polynomial::resetValues()
 {
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    /*for (int i = 0; i < MAX_DEGREE + 1; i++)
         monomial[i] = 0;
 
-    polyDegree = 0;
+    polyDegree = 0;*/
+    clearMemory();
 }
 
 void Polynomial::setPolynomial(const string s)
@@ -441,27 +784,37 @@ int Polynomial::addMonomial(const string curValue, const string curDegree, const
     }
 
     if (state == SD || state == SN || state == XZ)
-        monomial[0] +=  value;
+    {
+        addToFactor(0, value);
+    }
     if (state == X)
-        monomial[1] += value;
+    {
+        addToFactor(1, value);
+    }
     if (state == XP)
     {
         int degree = stoi(curDegree);
-        if (degree >= 0 && degree <= MAX_DEGREE)
+
+        if (degree >= 0)
+        {
+            addToFactor(degree, value);
+        }
+        else return 1;
+        /*if (degree >= 0 && degree <= MAX_DEGREE)
         {
             monomial[degree] += value;
         }
         else
         {
             return 1;
-        }
+        }*/
     }
     return 0;
 }
 
 void Polynomial::checkDegree()
 {
-    for (int i = MAX_DEGREE; i >= 0; i--)
+    /*for (int i = MAX_DEGREE; i >= 0; i--)
     {
         if (monomial[i] != 0)
         {
@@ -469,7 +822,22 @@ void Polynomial::checkDegree()
             return;
         }
     }
-    polyDegree = 0;
+    polyDegree = 0;*/
+
+    //Factor* cur = last;
+    /*while (cur != nullptr)
+    {
+        if (cur->value != 0)
+        {
+            polyDegree = cur->degree;
+            return;
+        }
+        cur = cur->prev;
+    }*/
+    if (last != nullptr)
+        polyDegree=last->degree;
+    else
+        polyDegree = 0;
 }
 
 int Polynomial::greatestCommonDivider(int a, int b) const
@@ -488,11 +856,27 @@ int Polynomial::greatestCommonDivider(int a, int b) const
 
 bool operator == (const Polynomial& left, const Polynomial& right)
 {
-    for (int i = 0; i < MAX_DEGREE + 1; i++)
+    /*for (int i = 0; i < MAX_DEGREE + 1; i++)
     {
         if (left.monomial[i] != right.monomial[i])
             return false;
     }
+    return true;*/
+
+    Polynomial::Factor* curL = left.first;
+    Polynomial::Factor* curR = right.first;
+
+    while (curL != nullptr && curR != nullptr)
+    {
+        if (curL->degree != curR->degree) return false;
+        if (curL->value != curR->value) return false;
+
+        curL = curL->next;
+        curR = curR->next;
+    }
+
+    if ((curL == nullptr) ^ (curR == nullptr)) return false;
+
     return true;
 }
 
@@ -519,28 +903,32 @@ Polynomial operator * (Polynomial left, const Polynomial& right)
 ostream& operator << (ostream& out, const Polynomial& right)
 {
     bool isFirst = true;
-    for (int i = MAX_DEGREE; i >= 0; i--)
+    //for (int i = MAX_DEGREE; i >= 0; i--)
+    Polynomial::Factor* cur = right.last;
+    while (cur != nullptr)
     {
-        if (right.monomial[i] != 0)
+        if (cur->value != 0)
         {
             if (!isFirst) out << " ";
-            if (!isFirst && right.monomial[i] > 0) out << "+ ";
+            if (!isFirst && cur->value > 0) out << "+ ";
 
-            if (i == 0) out << right.monomial[i];
+            if (cur->degree == 0) out << cur->value;
             else
             {
-                if (right.monomial[i] != 1 && right.monomial[i] != -1)
-                    out << right.monomial[i];
-                else if (right.monomial[i] == -1)
+                if (cur->value != 1 && cur->value != -1)
+                    out << cur->value;
+                else if (cur->value == -1)
                     out << "-";
 
                 out << "x";
-                if (i != 1) out << "^" << i;
+                if (cur->degree != 1) out << "^" << cur->degree;
             }
             isFirst = false;
         }
+
+        cur = cur->prev;
     }
-    if (right.polyDegree == 0 && right.monomial[0] == 0)
+    if (right.polyDegree == 0 && right.first != nullptr && right.first->degree == 0 && right.first->value == 0)
         out << "0";
 
     return out;
