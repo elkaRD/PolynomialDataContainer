@@ -42,25 +42,6 @@
 
 */
 
-
-
-/*class FactorMap
-{
-public:
-    FactorMap();
-    ~FactorMap();
-
-    Factor& operator [] (const int i);
-    //const Factor& operator [] (const int i) const;
-
-private:
-
-    Factor* first;
-    Factor* last;
-
-    Factor* factors;
-};*/
-
 class Polynomial
 {
 public:
@@ -95,8 +76,6 @@ public:
 
 
 private:
-
-    //int monomial[MAX_DEGREE + 1];
     int polyDegree;
 
     static bool isError;
