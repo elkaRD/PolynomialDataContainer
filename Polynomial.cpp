@@ -371,6 +371,13 @@ Polynomial& Polynomial::operator *= (const Polynomial& right)
         curL = curL->next;
     }
 
+    curL = temp.first;
+    while (curL != nullptr)
+    {
+        if (curL->value == 0) curL = freeFactor(&curL);
+        if (curL != nullptr) curL = curL->next;
+    }
+
     temp.checkDegree();
     *this = temp;
     return *this;

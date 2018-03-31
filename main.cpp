@@ -27,7 +27,7 @@ int main()
     cout<<wielo2.getDegree()<<": "<<wielo2<<"     "<<wielo2.calc(2)<<endl;*/
 
     przyklady();
-    //ui();
+    ui();
 
     return 0;
 }
