@@ -51,14 +51,14 @@ public:
     Polynomial(const std::string s);
     Polynomial(const char* s);
     Polynomial(const Polynomial& poly);
-    Polynomial(const int x);
+    Polynomial(const T x);
 
     ~Polynomial();
 
     void derivative();
     int getDegree() const;
-    int calc(const int x) const;
-    int getFactor(const int x) const;
+    T calc(const T x) const;
+    T getFactor(const int x) const;
     void reduceFactors();
 
     static bool checkLastError(std::string& getErrorMsg);
@@ -104,8 +104,8 @@ private:
 
     Factor* addFactor(const int deg);
     Factor* addFactor(const int deg, Factor** after);
-    Factor* addFactor(const int deg, const int value);
-    void addToFactor(const int deg, const int value);
+    Factor* addFactor(const int deg, const T value);
+    void addToFactor(const int deg, const T value);
     Factor* freeFactor(Factor** temp);
     void clearMemory();
 
@@ -115,6 +115,8 @@ private:
         SPM,        //single plus minus
         SD,         //single non-zero digit
         SN,         //single number
+        DOT,        //single dot
+        FR,         //fraction part
         X,          //single x
         XC,         //x and caret
         XZ,         //x power 0
@@ -130,6 +132,7 @@ private:
         CZ,         //zero digit
         CX,         //x
         CC,         //caret
+        CP,         //point
         CE          //different
     };
 
@@ -145,7 +148,7 @@ private:
     int typeOfChar(const char c) const;
     int nextState(const int state, const int c, const int i, bool& newError, std::string& errorDetails) const;
     int setMonomial(const std::string s, bool& newError, std::string& errorDetails, const int beginIt);
-    int addMonomial(const std::string curValue, const std::string curDegree, const int state);
+    int addMonomial(const std::string curValue, const std::string curDegree, const int state, const bool isFraction);
     void checkDegree();
     int greatestCommonDivider(int a, int b) const;
 };

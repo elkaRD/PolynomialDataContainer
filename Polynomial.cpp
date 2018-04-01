@@ -53,7 +53,7 @@ Polynomial<T>::Polynomial(const Polynomial& poly)
 }
 
 template <class T>
-Polynomial<T>::Polynomial(const int x)
+Polynomial<T>::Polynomial(const T x)
 {
     resetValues();
     addFactor(0, x);
@@ -93,10 +93,10 @@ int Polynomial<T>::getDegree() const
 }
 
 template <class T>
-int Polynomial<T>::calc(const int x) const
+T Polynomial<T>::calc(const T x) const
 {
-    int sum = 0;
-    int arg = 1;
+    T sum = 0;
+    T arg = 1;
     int prevPower = 0;
 
     Factor* cur = first;
@@ -117,7 +117,7 @@ int Polynomial<T>::calc(const int x) const
 }
 
 template <class T>
-int Polynomial<T>::getFactor(const int x) const
+T Polynomial<T>::getFactor(const int x) const
 {
     if (x >= 0)
     {
@@ -326,7 +326,7 @@ typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg, Polynomi
 }
 
 template <class T>
-typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg, const int value)
+typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg, const T value)
 {
     Factor* temp = addFactor(deg);
     temp->value = value;
@@ -335,7 +335,7 @@ typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg, const in
 }
 
 template <class T>
-void Polynomial<T>::addToFactor(const int deg, const int value)
+void Polynomial<T>::addToFactor(const int deg, const T value)
 {
     if (first == nullptr)
     {
@@ -495,6 +495,7 @@ int Polynomial<T>::typeOfChar(const char c) const
     if (c == 'x')             return CX;
     if (c == '+' || c == '-') return CPM;
     if (c == '^')             return CC;
+    if (c == '.')             return CP;
 
     return CE;
 }
@@ -535,6 +536,7 @@ int Polynomial<T>::nextState(const int state, const int c, const int i, bool& ne
         {
             case CZ: case CNZ: return SN;
             case CX:           return X;
+            case CP:           return DOT;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
@@ -545,8 +547,9 @@ int Polynomial<T>::nextState(const int state, const int c, const int i, bool& ne
     {
         switch (c)
         {
-            case CZ: return SN;
-            case CX: return X;
+            case CZ: case CNZ: return SN;
+            case CX:           return X;
+            case CP:           return DOT;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinna byc liczba";
@@ -558,9 +561,33 @@ int Polynomial<T>::nextState(const int state, const int c, const int i, bool& ne
         switch (c)
         {
             case CX: return X;
+            case CP: return DOT;
             default:
                 newError = true;
                 errorDetails += "\n   znak " + to_string(i) + ": powinien byc x";
+                return SE;
+        }
+    }
+    if (state == DOT)
+    {
+        switch (c)
+        {
+            case CZ: case CNZ: return FR;
+            default:
+                newError = true;
+                errorDetails += "\n   znak " + to_string(i) + ": brak ulamka";
+                return SE;
+        }
+    }
+    if (state == FR)
+    {
+        switch (c)
+        {
+            case CZ: case CNZ: return FR;
+            case CX:           return X;
+            default:
+                newError = true;
+                errorDetails += "\n   znak " + to_string(i) + ": niepoprawny ulamek";
                 return SE;
         }
     }
@@ -609,6 +636,7 @@ int Polynomial<T>::setMonomial(const string s, bool& newError, string& errorDeta
 {
     int state = BEG;
     int beginExp = -1;
+    int dot = 0;
     int caret = 0;
 
     string curValue = "";
@@ -621,7 +649,7 @@ int Polynomial<T>::setMonomial(const string s, bool& newError, string& errorDeta
         int c = typeOfChar(s[i]);
         state = nextState(state, c, beginIt + i, newError, errorDetails);
 
-        if ((state == SPM && s[i] == '-') || state == SD || state == SN || state == SZ)
+        if ((state == SPM && s[i] == '-') || state == SD || state == SN || state == SZ || state == DOT || state == FR)
         {
             curValue += s[i];
         }
@@ -633,6 +661,10 @@ int Polynomial<T>::setMonomial(const string s, bool& newError, string& errorDeta
         if (state == XC)
         {
             caret = i;
+        }
+        if (state == DOT)
+        {
+            dot = i;
         }
         if (state == SE)
         {
@@ -661,8 +693,14 @@ int Polynomial<T>::setMonomial(const string s, bool& newError, string& errorDeta
         errorDetails += "\n   znak " + to_string(beginIt + caret) + ": niepoprawne uzycie znaku ^";
         return beginIt + caret;
     }
+    if (state == DOT)
+    {
+        newError = true;
+        errorDetails += "\n   znak " + to_string(beginIt + dot) + ": niepoprawny ulamek";
+        return beginIt + dot;
+    }
 
-    if (addMonomial(curValue, curDegree, state))
+    if (addMonomial(curValue, curDegree, state, dot))
     {
         newError = true;
         errorDetails += "\n   znak " + to_string(beginIt + beginExp) + ": niepoprawny wykladnik zmiennej x";
@@ -673,7 +711,7 @@ int Polynomial<T>::setMonomial(const string s, bool& newError, string& errorDeta
 }
 
 template <class T>
-int Polynomial<T>::addMonomial(const string curValue, const string curDegree, const int state)
+int Polynomial<T>::addMonomial(const string curValue, const string curDegree, const int state, const bool isFraction)
 {
     int value;
     if (curValue.size() == 0)
@@ -686,7 +724,8 @@ int Polynomial<T>::addMonomial(const string curValue, const string curDegree, co
     }
     else
     {
-        value = stoi(curValue);
+        if (!isFraction) value = stoi(curValue);
+        else             value = stold(curValue);
     }
 
     if (state == SD || state == SN || state == XZ)
@@ -737,8 +776,8 @@ int Polynomial<T>::greatestCommonDivider(int a, int b) const
 template <class T>
 bool operator == (const Polynomial<T>& left, const Polynomial<T>& right)
 {
-    Polynomial<T>::Factor* curL = left.first;
-    Polynomial<T>::Factor* curR = right.first;
+    class Polynomial<T>::Factor* curL = left.first;
+    class Polynomial<T>::Factor* curR = right.first;
 
     while (curL != nullptr && curR != nullptr)
     {
@@ -783,7 +822,7 @@ ostream& operator << (ostream& out, const Polynomial<T>& right)
 {
     bool isFirst = true;
 
-    Polynomial<T>::Factor* cur = right.last;
+    class Polynomial<T>::Factor* cur = right.last;
     while (cur != nullptr)
     {
         if (cur->value != 0)
@@ -821,3 +860,35 @@ istream& operator >> (istream& in, Polynomial<T>& right)
     right.setPolynomial(temp);
     return in;
 }
+
+template class Polynomial<int>;
+template ostream& operator << <int>(ostream& out, const Polynomial<int>& right);
+template bool operator == (const Polynomial<int>& left, const Polynomial<int>& right);
+template bool operator != (const Polynomial<int>& left, const Polynomial<int>& right);
+template Polynomial<int> operator + (Polynomial<int> left, const Polynomial<int>& right);
+template Polynomial<int> operator - (Polynomial<int> left, const Polynomial<int>& right);
+template Polynomial<int> operator * (Polynomial<int> left, const Polynomial<int>& right);
+
+template class Polynomial<long long>;
+template ostream& operator << <long long>(ostream& out, const Polynomial<long long>& right);
+template bool operator == (const Polynomial<long long>& left, const Polynomial<long long>& right);
+template bool operator != (const Polynomial<long long>& left, const Polynomial<long long>& right);
+template Polynomial<long long> operator + (Polynomial<long long> left, const Polynomial<long long>& right);
+template Polynomial<long long> operator - (Polynomial<long long> left, const Polynomial<long long>& right);
+template Polynomial<long long> operator * (Polynomial<long long> left, const Polynomial<long long>& right);
+
+template class Polynomial<float>;
+template ostream& operator << <float>(ostream& out, const Polynomial<float>& right);
+template bool operator == (const Polynomial<float>& left, const Polynomial<float>& right);
+template bool operator != (const Polynomial<float>& left, const Polynomial<float>& right);
+template Polynomial<float> operator + (Polynomial<float> left, const Polynomial<float>& right);
+template Polynomial<float> operator - (Polynomial<float> left, const Polynomial<float>& right);
+template Polynomial<float> operator * (Polynomial<float> left, const Polynomial<float>& right);
+
+template class Polynomial<double>;
+template ostream& operator << <double>(ostream& out, const Polynomial<double>& right);
+template bool operator == (const Polynomial<double>& left, const Polynomial<double>& right);
+template bool operator != (const Polynomial<double>& left, const Polynomial<double>& right);
+template Polynomial<double> operator + (Polynomial<double> left, const Polynomial<double>& right);
+template Polynomial<double> operator - (Polynomial<double> left, const Polynomial<double>& right);
+template Polynomial<double> operator * (Polynomial<double> left, const Polynomial<double>& right);
