@@ -78,10 +78,10 @@ void Polynomial<T>::derivative()
         }
         else
         {
-            freeFactor(&cur);
+            cur = freeFactor(&cur);
         }
 
-        cur = cur->next;
+        if (cur != nullptr) cur = cur->next;
     }
     checkDegree();
 }
