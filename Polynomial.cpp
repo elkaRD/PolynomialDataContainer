@@ -1,4 +1,4 @@
-/*  Projekt 2 PROI - Wielomiany
+/*  Projekt 3 PROI - Wielomiany v2
  *  Robert Dudzinski 2018
  *  Polynomial.cpp
  */
@@ -6,10 +6,13 @@
 #include "Polynomial.h"
 using namespace std;
 
-bool Polynomial::isError = false;
-string Polynomial::errorMsg = "";
+template <class T>
+bool Polynomial<T>::isError = false;
+template <class T>
+string Polynomial<T>::errorMsg = "";
 
-Polynomial::Factor::Factor(const int pos)
+template <class T>
+Polynomial<T>::Factor::Factor(const int pos)
 {
     degree = pos;
     value = 0;
@@ -17,45 +20,53 @@ Polynomial::Factor::Factor(const int pos)
     prev = nullptr;
 }
 
-Polynomial::Factor::Factor()
+template <class T>
+Polynomial<T>::Factor::Factor()
 {
     value = 0;
     next = nullptr;
     prev = nullptr;
 }
 
-Polynomial::Polynomial ()
+template <class T>
+Polynomial<T>::Polynomial ()
 {
     resetValues();
 }
 
-Polynomial::Polynomial(const char* s)
+template <class T>
+Polynomial<T>::Polynomial(const char* s)
 {
     setPolynomial(s);
 }
 
-Polynomial::Polynomial (const string s)
+template <class T>
+Polynomial<T>::Polynomial (const string s)
 {
     setPolynomial(s);
 }
 
-Polynomial::Polynomial(const Polynomial& poly)
+template <class T>
+Polynomial<T>::Polynomial(const Polynomial& poly)
 {
     *this = poly;
 }
 
-Polynomial::Polynomial(const int x)
+template <class T>
+Polynomial<T>::Polynomial(const int x)
 {
     resetValues();
     addFactor(0, x);
 }
 
-Polynomial::~Polynomial()
+template <class T>
+Polynomial<T>::~Polynomial()
 {
     clearMemory();
 }
 
-void Polynomial::derivative()
+template <class T>
+void Polynomial<T>::derivative()
 {
     Factor* cur = first;
     while (cur != nullptr)
@@ -75,12 +86,14 @@ void Polynomial::derivative()
     checkDegree();
 }
 
-int Polynomial::getDegree() const
+template <class T>
+int Polynomial<T>::getDegree() const
 {
     return polyDegree;
 }
 
-int Polynomial::calc(const int x) const
+template <class T>
+int Polynomial<T>::calc(const int x) const
 {
     int sum = 0;
     int arg = 1;
@@ -103,7 +116,8 @@ int Polynomial::calc(const int x) const
     return sum;
 }
 
-int Polynomial::getFactor(const int x) const
+template <class T>
+int Polynomial<T>::getFactor(const int x) const
 {
     if (x >= 0)
     {
@@ -124,7 +138,8 @@ int Polynomial::getFactor(const int x) const
     return 0;
 }
 
-void Polynomial::reduceFactors()
+template <class T>
+void Polynomial<T>::reduceFactors()
 {
     bool isBegin = true;
     int gcd = 1;
@@ -157,7 +172,8 @@ void Polynomial::reduceFactors()
     }
 }
 
-bool Polynomial::checkLastError(string& getErrorMsg)
+template <class T>
+bool Polynomial<T>::checkLastError(string& getErrorMsg)
 {
     if(isError)
         getErrorMsg = errorMsg;
@@ -169,7 +185,8 @@ bool Polynomial::checkLastError(string& getErrorMsg)
     return temp;
 }
 
-Polynomial& Polynomial::modifyFactors(const Polynomial& right, const ModifyMode mode)
+template <class T>
+Polynomial<T>& Polynomial<T>::modifyFactors(const Polynomial<T>& right, const ModifyMode mode)
 {
     Factor* curL = first;
     Factor* curR = right.first;
@@ -211,7 +228,8 @@ Polynomial& Polynomial::modifyFactors(const Polynomial& right, const ModifyMode 
     return *this;
 }
 
-Polynomial& Polynomial::operator = (Polynomial const &right)
+template <class T>
+Polynomial<T>& Polynomial<T>::operator = (Polynomial<T> const &right)
 {
     clearMemory();
 
@@ -227,17 +245,20 @@ Polynomial& Polynomial::operator = (Polynomial const &right)
     return *this;
 }
 
-Polynomial& Polynomial::operator += (const Polynomial& right)
+template <class T>
+Polynomial<T>& Polynomial<T>::operator += (const Polynomial<T>& right)
 {
     return modifyFactors(right, ADD);
 }
 
-Polynomial& Polynomial::operator -= (const Polynomial& right)
+template <class T>
+Polynomial<T>& Polynomial<T>::operator -= (const Polynomial<T>& right)
 {
     return modifyFactors(right, SUBTRACT);
 }
 
-Polynomial& Polynomial::operator *= (const Polynomial& right)
+template <class T>
+Polynomial<T>& Polynomial<T>::operator *= (const Polynomial<T>& right)
 {
     Polynomial temp;
 
@@ -267,7 +288,8 @@ Polynomial& Polynomial::operator *= (const Polynomial& right)
     return *this;
 }
 
-Polynomial::Factor* Polynomial::addFactor(const int deg)
+template <class T>
+typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg)
 {
     if (first == nullptr)
     {
@@ -282,7 +304,8 @@ Polynomial::Factor* Polynomial::addFactor(const int deg)
     return last;
 }
 
-Polynomial::Factor* Polynomial::addFactor(const int deg, Polynomial::Factor** after)
+template <class T>
+typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg, Polynomial<T>::Factor** after)
 {
     Factor* temp = (*after)->prev;
 
@@ -302,7 +325,8 @@ Polynomial::Factor* Polynomial::addFactor(const int deg, Polynomial::Factor** af
     return temp->next;
 }
 
-Polynomial::Factor* Polynomial::addFactor(const int deg, const int value)
+template <class T>
+typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg, const int value)
 {
     Factor* temp = addFactor(deg);
     temp->value = value;
@@ -310,7 +334,8 @@ Polynomial::Factor* Polynomial::addFactor(const int deg, const int value)
     return temp;
 }
 
-void Polynomial::addToFactor(const int deg, const int value)
+template <class T>
+void Polynomial<T>::addToFactor(const int deg, const int value)
 {
     if (first == nullptr)
     {
@@ -357,7 +382,8 @@ void Polynomial::addToFactor(const int deg, const int value)
     last->value += value;
 }
 
-Polynomial::Factor* Polynomial::freeFactor(Polynomial::Factor** temp)
+template <class T>
+typename Polynomial<T>::Factor* Polynomial<T>::freeFactor(Polynomial<T>::Factor** temp)
 {
     Factor* prev = (*temp)->prev;
     if (prev == nullptr)
@@ -386,7 +412,8 @@ Polynomial::Factor* Polynomial::freeFactor(Polynomial::Factor** temp)
     return prev;
 }
 
-void Polynomial::clearMemory()
+template <class T>
+void Polynomial<T>::clearMemory()
 {
     Factor* temp = first;
     while (first != nullptr)
@@ -400,12 +427,14 @@ void Polynomial::clearMemory()
     polyDegree = 0;
 }
 
-void Polynomial::resetValues()
+template <class T>
+void Polynomial<T>::resetValues()
 {
     clearMemory();
 }
 
-void Polynomial::setPolynomial(const string s)
+template <class T>
+void Polynomial<T>::setPolynomial(const string s)
 {
     resetValues();
 
@@ -458,7 +487,8 @@ void Polynomial::setPolynomial(const string s)
     }
 }
 
-int Polynomial::typeOfChar(const char c) const
+template <class T>
+int Polynomial<T>::typeOfChar(const char c) const
 {
     if (c >= '1' && c <= '9') return CNZ;
     if (c == '0')             return CZ;
@@ -469,7 +499,8 @@ int Polynomial::typeOfChar(const char c) const
     return CE;
 }
 
-int Polynomial::nextState(const int state, const int c, const int i, bool& newError, string& errorDetails) const
+template <class T>
+int Polynomial<T>::nextState(const int state, const int c, const int i, bool& newError, string& errorDetails) const
 {
     if (state == BEG)
     {
@@ -573,7 +604,8 @@ int Polynomial::nextState(const int state, const int c, const int i, bool& newEr
     return SE;
 }
 
-int Polynomial::setMonomial(const string s, bool& newError, string& errorDetails, const int beginIt)
+template <class T>
+int Polynomial<T>::setMonomial(const string s, bool& newError, string& errorDetails, const int beginIt)
 {
     int state = BEG;
     int beginExp = -1;
@@ -640,7 +672,8 @@ int Polynomial::setMonomial(const string s, bool& newError, string& errorDetails
     return -1;
 }
 
-int Polynomial::addMonomial(const string curValue, const string curDegree, const int state)
+template <class T>
+int Polynomial<T>::addMonomial(const string curValue, const string curDegree, const int state)
 {
     int value;
     if (curValue.size() == 0)
@@ -677,7 +710,8 @@ int Polynomial::addMonomial(const string curValue, const string curDegree, const
     return 0;
 }
 
-void Polynomial::checkDegree()
+template <class T>
+void Polynomial<T>::checkDegree()
 {
     if (last != nullptr)
         polyDegree=last->degree;
@@ -685,7 +719,8 @@ void Polynomial::checkDegree()
         polyDegree = 0;
 }
 
-int Polynomial::greatestCommonDivider(int a, int b) const
+template <class T>
+int Polynomial<T>::greatestCommonDivider(int a, int b) const
 {
     if (a < 0) a *= -1;
     if (b < 0) b *= -1;
@@ -699,10 +734,11 @@ int Polynomial::greatestCommonDivider(int a, int b) const
     return a;
 }
 
-bool operator == (const Polynomial& left, const Polynomial& right)
+template <class T>
+bool operator == (const Polynomial<T>& left, const Polynomial<T>& right)
 {
-    Polynomial::Factor* curL = left.first;
-    Polynomial::Factor* curR = right.first;
+    Polynomial<T>::Factor* curL = left.first;
+    Polynomial<T>::Factor* curR = right.first;
 
     while (curL != nullptr && curR != nullptr)
     {
@@ -718,31 +754,36 @@ bool operator == (const Polynomial& left, const Polynomial& right)
     return true;
 }
 
-bool operator != (const Polynomial& left, const Polynomial& right)
+template <class T>
+bool operator != (const Polynomial<T>& left, const Polynomial<T>& right)
 {
     return !(left == right);
 }
 
-Polynomial operator + (Polynomial left, const Polynomial& right)
+template <class T>
+Polynomial<T> operator + (Polynomial<T> left, const Polynomial<T>& right)
 {
     return left += right;
 }
 
-Polynomial operator - (Polynomial left, const Polynomial& right)
+template <class T>
+Polynomial<T> operator - (Polynomial<T> left, const Polynomial<T>& right)
 {
     return left -= right;
 }
 
-Polynomial operator * (Polynomial left, const Polynomial& right)
+template <class T>
+Polynomial<T> operator * (Polynomial<T> left, const Polynomial<T>& right)
 {
     return left *= right;
 }
 
-ostream& operator << (ostream& out, const Polynomial& right)
+template <class T>
+ostream& operator << (ostream& out, const Polynomial<T>& right)
 {
     bool isFirst = true;
 
-    Polynomial::Factor* cur = right.last;
+    Polynomial<T>::Factor* cur = right.last;
     while (cur != nullptr)
     {
         if (cur->value != 0)
@@ -772,7 +813,8 @@ ostream& operator << (ostream& out, const Polynomial& right)
     return out;
 }
 
-istream& operator >> (istream& in, Polynomial& right)
+template <class T>
+istream& operator >> (istream& in, Polynomial<T>& right)
 {
     string temp;
     in >> temp;

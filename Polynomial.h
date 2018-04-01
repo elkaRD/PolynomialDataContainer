@@ -1,4 +1,4 @@
-/*  Projekt 2 PROI - Wielomiany
+/*  Projekt 3 PROI - Wielomiany v2
  *  Robert Dudzinski 2018
  *  Polynomial.h
  */
@@ -42,6 +42,7 @@
 
 */
 
+template <class T = int>
 class Polynomial
 {
 public:
@@ -62,17 +63,21 @@ public:
 
     static bool checkLastError(std::string& getErrorMsg);
 
-    Polynomial& operator = (const Polynomial& right);
-    Polynomial& operator += (const Polynomial& right);
-    Polynomial& operator -= (const Polynomial& right);
+    Polynomial<T>& operator = (const Polynomial<T>& right);
+    Polynomial<T>& operator += (const Polynomial<T>& right);
+    Polynomial<T>& operator -= (const Polynomial<T>& right);
 
-    Polynomial& operator *= (const Polynomial& right);
+    Polynomial<T>& operator *= (const Polynomial<T>& right);
 
-    friend bool operator == (const Polynomial& left, const Polynomial& right);
-    friend bool operator != (const Polynomial& left, const Polynomial& right);
+    template <class T2>
+    friend bool operator == (const Polynomial<T2>& left, const Polynomial<T2>& right);
+    template <class T2>
+    friend bool operator != (const Polynomial<T2>& left, const Polynomial<T2>& right);
 
-    friend std::ostream& operator << (std::ostream& out, const Polynomial& right);
-    friend std::istream& operator >> (std::istream& in, Polynomial& right);
+    template <class T2>
+    friend std::ostream& operator << (std::ostream& out, const Polynomial<T2>& right);
+    template <class T2>
+    friend std::istream& operator >> (std::istream& in, Polynomial<T2>& right);
 
 
 private:
@@ -87,7 +92,7 @@ private:
         Factor(const int pos);
         Factor();
 
-        int value;
+        T value;
         int degree;
 
         Factor* next;
@@ -145,15 +150,22 @@ private:
     int greatestCommonDivider(int a, int b) const;
 };
 
-bool operator == (const Polynomial& left, const Polynomial& right);
-bool operator != (const Polynomial& left, const Polynomial& right);
+template <class T>
+bool operator == (const Polynomial<T>& left, const Polynomial<T>& right);
+template <class T>
+bool operator != (const Polynomial<T>& left, const Polynomial<T>& right);
 
-Polynomial operator + (Polynomial left, const Polynomial& right);
-Polynomial operator - (Polynomial left, const Polynomial& right);
+template <class T>
+Polynomial<T> operator + (Polynomial<T> left, const Polynomial<T>& right);
+template <class T>
+Polynomial<T> operator - (Polynomial<T> left, const Polynomial<T>& right);
 
-Polynomial operator * (Polynomial left, const Polynomial& right);
+template <class T>
+Polynomial<T> operator * (Polynomial<T> left, const Polynomial<T>& right);
 
-std::ostream& operator << (std::ostream& out, const Polynomial& right);
-std::istream& operator >> (std::istream& in, Polynomial& right);
+template <class T>
+std::ostream& operator << (std::ostream& out, const Polynomial<T>& right);
+template <class T>
+std::istream& operator >> (std::istream& in, Polynomial<T>& right);
 
 #endif // POLYNOMIAL_H
