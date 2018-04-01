@@ -75,13 +75,13 @@ void Polynomial<T>::derivative()
         {
             cur->value = cur->degree * cur->value;
             cur->degree--;
+
+            cur = cur->next;
         }
         else
         {
             cur = freeFactor(&cur);
         }
-
-        if (cur != nullptr) cur = cur->next;
     }
     checkDegree();
 }
