@@ -386,24 +386,32 @@ template <class T>
 typename Polynomial<T>::Factor* Polynomial<T>::freeFactor(Polynomial<T>::Factor** temp)
 {
     Factor* prev = (*temp)->prev;
-    if (prev == nullptr)
+    if (*temp != first || *temp != last)
     {
-        first = (*temp)->next;
-        first->prev = nullptr;
-    }
-    else
-    {
-        prev->next = (*temp)->next;
-    }
+        if (prev == nullptr)
+        {
+            first = (*temp)->next;
+            first->prev = nullptr;
+        }
+        else
+        {
+            prev->next = (*temp)->next;
+        }
 
-    if ((*temp)->next == nullptr)
-    {
-        last = prev;
-        last->next = nullptr;
+        if ((*temp)->next == nullptr)
+        {
+            last = prev;
+            last->next = nullptr;
+        }
+        else
+        {
+            (*temp)->next->prev = prev;
+        }
     }
     else
     {
-        (*temp)->next->prev = prev;
+        first = nullptr;
+        last = nullptr;
     }
 
     delete *temp;
@@ -713,28 +721,33 @@ int Polynomial<T>::setMonomial(const string s, bool& newError, string& errorDeta
 template <class T>
 int Polynomial<T>::addMonomial(const string curValue, const string curDegree, const int state, const bool isFraction)
 {
-    int value;
+    long long valueLL = 0;
+    long double valueLD = 0;
     if (curValue.size() == 0)
     {
-        value = 1;
+        valueLL = 1;
+        valueLD = 1;
     }
     else if (curValue.size() == 1 && curValue[0] == '-')
     {
-        value = -1;
+        valueLL = -1;
+        valueLD = -1;
     }
     else
     {
-        if (!isFraction) value = stoi(curValue);
-        else             value = stold(curValue);
+        if (!isFraction) valueLL = stoll(curValue);
+        else             valueLD = stold(curValue);
     }
 
-    if (state == SD || state == SN || state == XZ)
+    if (state == SD || state == SN || state == XZ || state == FR)
     {
-        addToFactor(0, value);
+        if (!isFraction) addToFactor(0, valueLL);
+        else             addToFactor(0, valueLD);
     }
     if (state == X)
     {
-        addToFactor(1, value);
+        if (!isFraction) addToFactor(1, valueLL);
+        else             addToFactor(1, valueLD);
     }
     if (state == XP)
     {
@@ -742,7 +755,8 @@ int Polynomial<T>::addMonomial(const string curValue, const string curDegree, co
 
         if (degree >= 0)
         {
-            addToFactor(degree, value);
+            if (!isFraction) addToFactor(degree, valueLL);
+            else             addToFactor(degree, valueLD);
         }
         else return 1;
     }
@@ -759,14 +773,35 @@ void Polynomial<T>::checkDegree()
 }
 
 template <class T>
-int Polynomial<T>::greatestCommonDivider(int a, int b) const
+long long Polynomial<T>::greatestCommonDivider(long long a, long long b) const
 {
+    /*int maxPow = 0;        // prototype for fraction numbers; currently only for integers
+    Factor* cur = first;
+    while (cur != nullptr)
+    {
+        int i;
+        long double temp = cur->value;
+        for (i = 0; temp - (long long)temp != 0; i++)
+        {
+            temp *= 10;
+        }
+        if (i > maxPow) maxPow = i;
+
+        cur = cur->next;
+    }
+
+    for (int i = 0; i < maxPow; i++)
+    {
+        a *= 10;
+        b *= 10;
+    }*/
+
     if (a < 0) a *= -1;
     if (b < 0) b *= -1;
 
     while (b != 0)
     {
-        int c = a % b;
+        long long c = a % b;
         a = b;
         b = c;
     }
@@ -863,6 +898,7 @@ istream& operator >> (istream& in, Polynomial<T>& right)
 
 template class Polynomial<int>;
 template ostream& operator << <int>(ostream& out, const Polynomial<int>& right);
+template std::istream& operator >> (std::istream& in, Polynomial<int>& right);
 template bool operator == (const Polynomial<int>& left, const Polynomial<int>& right);
 template bool operator != (const Polynomial<int>& left, const Polynomial<int>& right);
 template Polynomial<int> operator + (Polynomial<int> left, const Polynomial<int>& right);
@@ -871,6 +907,7 @@ template Polynomial<int> operator * (Polynomial<int> left, const Polynomial<int>
 
 template class Polynomial<long long>;
 template ostream& operator << <long long>(ostream& out, const Polynomial<long long>& right);
+template std::istream& operator >> (std::istream& in, Polynomial<long long>& right);
 template bool operator == (const Polynomial<long long>& left, const Polynomial<long long>& right);
 template bool operator != (const Polynomial<long long>& left, const Polynomial<long long>& right);
 template Polynomial<long long> operator + (Polynomial<long long> left, const Polynomial<long long>& right);
@@ -879,6 +916,7 @@ template Polynomial<long long> operator * (Polynomial<long long> left, const Pol
 
 template class Polynomial<float>;
 template ostream& operator << <float>(ostream& out, const Polynomial<float>& right);
+template std::istream& operator >> (std::istream& in, Polynomial<float>& right);
 template bool operator == (const Polynomial<float>& left, const Polynomial<float>& right);
 template bool operator != (const Polynomial<float>& left, const Polynomial<float>& right);
 template Polynomial<float> operator + (Polynomial<float> left, const Polynomial<float>& right);
@@ -887,6 +925,7 @@ template Polynomial<float> operator * (Polynomial<float> left, const Polynomial<
 
 template class Polynomial<double>;
 template ostream& operator << <double>(ostream& out, const Polynomial<double>& right);
+template std::istream& operator >> (std::istream& in, Polynomial<double>& right);
 template bool operator == (const Polynomial<double>& left, const Polynomial<double>& right);
 template bool operator != (const Polynomial<double>& left, const Polynomial<double>& right);
 template Polynomial<double> operator + (Polynomial<double> left, const Polynomial<double>& right);

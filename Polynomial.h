@@ -94,6 +94,7 @@ private:
 
         T value;
         int degree;
+        int precision;
 
         Factor* next;
         Factor* prev;
@@ -150,7 +151,7 @@ private:
     int setMonomial(const std::string s, bool& newError, std::string& errorDetails, const int beginIt);
     int addMonomial(const std::string curValue, const std::string curDegree, const int state, const bool isFraction);
     void checkDegree();
-    int greatestCommonDivider(int a, int b) const;
+    long long greatestCommonDivider(long long a, long long b) const;
 };
 
 template <class T>
