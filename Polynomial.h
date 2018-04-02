@@ -79,6 +79,38 @@ public:
     template <class T2>
     friend std::istream& operator >> (std::istream& in, Polynomial<T2>& right);
 
+    class iterator
+    {
+    private:
+
+        friend Polynomial<T>;
+        //iterator(class Polynomial<T>::Factor* pointer);
+        class Polynomial<T>::Factor* ptr;
+        class Polynomial<T>::Factor* prevPtr;
+        bool isBegin;
+    public:
+        iterator& operator ++ (int);
+        iterator& operator -- (int);
+        iterator& operator = (const class Polynomial<T>::iterator& right);
+        const class Polynomial<T>::Factor* operator -> () const;
+
+        bool operator == (const class Polynomial<T>::iterator& right) const;
+        bool operator != (const class Polynomial<T>::iterator& right) const;
+        bool operator == (std::nullptr_t) const;
+        bool operator != (std::nullptr_t) const;
+
+        /*template <class T2>
+        friend bool operator == (class Polynomial<T2>::iterator& left, class Polynomial<T2>::iterator& right);
+        template <class T2>
+        friend bool operator != (const class Polynomial<T2>::iterator& left, const class Polynomial<T2>::iterator& right);
+        template <class T2>
+        friend bool operator == (const class Polynomial<T2>::iterator& left, std::nullptr_t);
+        template <class T2>
+        friend bool operator != (const class Polynomial<T2>::iterator& left, std::nullptr_t);*/
+    };
+
+    iterator begin() const;
+    iterator end() const;
 
 private:
     int polyDegree;
@@ -171,5 +203,14 @@ template <class T>
 std::ostream& operator << (std::ostream& out, const Polynomial<T>& right);
 template <class T>
 std::istream& operator >> (std::istream& in, Polynomial<T>& right);
+
+/*template <class T>
+bool operator == ( class Polynomial<T>::iterator& left, class Polynomial<T>::iterator& right);
+template <class T>
+bool operator != (const class Polynomial<T>::iterator& left, const class Polynomial<T>::iterator& right);
+template <class T>
+bool operator == (const class Polynomial<T>::iterator& left, std::nullptr_t);
+template <class T>
+bool operator != (const class Polynomial<T>::iterator& left, std::nullptr_t);*/
 
 #endif // POLYNOMIAL_H

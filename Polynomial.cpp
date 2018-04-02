@@ -896,6 +896,85 @@ istream& operator >> (istream& in, Polynomial<T>& right)
     return in;
 }
 
+template <class T>
+typename Polynomial<T>::iterator Polynomial<T>::begin() const
+{
+    iterator it;
+    it.ptr = first;
+    return it;
+};
+
+template <class T>
+typename Polynomial<T>::iterator Polynomial<T>::end() const
+{
+    iterator it;
+    it.ptr = last;
+    return it;
+};
+
+template <class T>
+typename Polynomial<T>::iterator& Polynomial<T>::iterator::operator ++ (int)
+{
+    if (ptr != nullptr)
+    {
+        prevPtr = ptr;
+        ptr = ptr->next;
+        isBegin = true;
+    }
+    else if (!isBegin) ptr = prevPtr;
+    return *this;
+}
+
+template <class T>
+typename Polynomial<T>::iterator& Polynomial<T>::iterator::operator -- (int)
+{
+    if (ptr != nullptr)
+    {
+        prevPtr = ptr;
+        ptr = ptr->prev;
+        isBegin = false;
+    }
+    else if (isBegin) ptr = prevPtr;
+    return *this;
+}
+
+template <class T>
+typename Polynomial<T>::iterator& Polynomial<T>::iterator::operator = (const class Polynomial<T>::iterator& right)
+{
+    ptr = right.ptr;
+    return *this;
+}
+
+template <class T>
+const class Polynomial<T>::Factor* Polynomial<T>::iterator::operator -> () const
+{
+    return ptr;
+}
+
+template <class T>
+bool Polynomial<T>::iterator::operator == (const class Polynomial<T>::iterator& right) const
+{
+    return ptr == right.ptr;
+}
+
+template <class T>
+bool Polynomial<T>::iterator::operator != (const class Polynomial<T>::iterator& right) const
+{
+    return ptr != right.ptr;
+}
+
+template <class T>
+bool Polynomial<T>::iterator::operator == (std::nullptr_t) const
+{
+    return ptr == nullptr;
+}
+
+template <class T>
+bool Polynomial<T>::iterator::operator != (std::nullptr_t) const
+{
+    return ptr != nullptr;
+}
+
 template class Polynomial<int>;
 template ostream& operator << <int>(ostream& out, const Polynomial<int>& right);
 template std::istream& operator >> (std::istream& in, Polynomial<int>& right);

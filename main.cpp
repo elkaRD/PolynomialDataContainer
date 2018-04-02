@@ -9,12 +9,14 @@ using namespace std;
 
 void przyklady();
 void ui();
+void testIterator();
 
 int main()
 {
     cout << "   Projekt PROI - Operacje na wielomianach v2" <<endl;
     cout << "   Robert Dudzinski" <<endl;
 
+    testIterator();
     przyklady();
     ui();
 
@@ -231,4 +233,25 @@ void ui()
         cin.clear();
         cin.ignore();
     }
+}
+
+void testIterator()
+{
+    Polynomial<int> wielo = Polynomial<int>("12x88 + 15x70 + 10x5 + 2x15 - x70 + 3");
+
+    cout<<endl<<"iterator test: "<<wielo<<endl;
+
+    for (Polynomial<int>::iterator it = wielo.begin(); it != nullptr; it++)
+    {
+        cout << it->value << " " << it->degree << ",     ";
+    }
+
+    cout<<endl;
+
+    for (Polynomial<int>::iterator it = wielo.end(); it != nullptr; it--)
+    {
+        cout << it->value << " " << it->degree << ",     ";
+    }
+
+    cout<<endl<<"end of iterator test"<<endl<<endl;
 }
