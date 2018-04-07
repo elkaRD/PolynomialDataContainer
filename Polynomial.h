@@ -89,12 +89,14 @@ public:
         bool isBegin;
 
     public:
+        const class Polynomial<T>::Factor& operator * ();
+
         iterator& operator ++ (int);
         iterator& operator -- (int);
         iterator& operator ++ ();
         iterator& operator -- ();
         iterator& operator = (const class Polynomial<T>::iterator& right);
-        const class Polynomial<T>::Factor* operator -> () const;
+        //const class Polynomial<T>::Factor* operator -> () const;
 
         bool operator == (const class Polynomial<T>::iterator& right) const;
         bool operator != (const class Polynomial<T>::iterator& right) const;
@@ -114,7 +116,7 @@ private:
     class Factor
     {
     public:
-        Factor(const int pos);
+        Factor(const int deg);
         Factor();
 
         T value;
@@ -122,6 +124,10 @@ private:
 
         Factor* next;
         Factor* prev;
+
+        const T& getValue() const;
+        const int& getDegree() const;
+        void setValue(const T& newValue);
     };
 
     Factor* first = nullptr;
@@ -202,9 +208,9 @@ template <class T>
 std::string Polynomial<T>::errorMsg = "";
 
 template <class T>
-Polynomial<T>::Factor::Factor(const int pos)
+Polynomial<T>::Factor::Factor(const int deg)
 {
-    degree = pos;
+    degree = deg;
     value = 0;
     next = nullptr;
     prev = nullptr;
@@ -216,6 +222,28 @@ Polynomial<T>::Factor::Factor()
     value = 0;
     next = nullptr;
     prev = nullptr;
+}
+
+template <class T>
+const T& Polynomial<T>::Factor::getValue() const
+{
+    return value;
+}
+
+template <class T>
+const int& Polynomial<T>::Factor::getDegree() const
+{
+    return degree;
+}
+
+template <class T>
+void Polynomial<T>::Factor::setValue(const T& newValue)
+{
+    value = newValue;
+    if (value == 0)
+    {
+
+    }
 }
 
 template <class T>
@@ -1104,6 +1132,12 @@ typename Polynomial<T>::iterator Polynomial<T>::end() const
 };
 
 template <class T>
+const typename Polynomial<T>::Factor& Polynomial<T>::iterator::operator * ()
+{
+    return *ptr;
+}
+
+template <class T>
 typename Polynomial<T>::iterator& Polynomial<T>::iterator::operator ++ (int)
 {
     if (ptr != nullptr)
@@ -1150,11 +1184,11 @@ typename Polynomial<T>::iterator& Polynomial<T>::iterator::operator = (const cla
     return *this;
 }
 
-template <class T>
+/*template <class T>
 const class Polynomial<T>::Factor* Polynomial<T>::iterator::operator -> () const
 {
     return ptr;
-}
+}*/
 
 template <class T>
 bool Polynomial<T>::iterator::operator == (const class Polynomial<T>::iterator& right) const

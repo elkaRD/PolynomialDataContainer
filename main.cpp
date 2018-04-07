@@ -241,24 +241,24 @@ void testIterator()
 
     cout<<endl<<"iterator test: "<<wielo<<endl;
 
-    for (Polynomial<int>::iterator it = wielo.begin(); it != wielo.end(); it++)
+    /*for (Polynomial<int>::iterator it = wielo.begin(); it != wielo.end(); it++)
     {
         cout << it->value << " " << it->degree << ",     ";
+    }*/
+
+    cout<<endl;
+
+    for (auto it : wielo)
+    {
+        cout << it.getValue() << " " << it.getDegree() << ",     ";
     }
 
     cout<<endl;
 
-    for (Polynomial<int>::iterator it : wielo)
+    /*for (Polynomial<int>::iterator it = --wielo.end(); it != nullptr; it--)
     {
         cout << it->value << " " << it->degree << ",     ";
-    }
-
-    cout<<endl;
-
-    for (Polynomial<int>::iterator it = --wielo.end(); it != nullptr; it--)
-    {
-        cout << it->value << " " << it->degree << ",     ";
-    }
+    }*/
 
     cout<<endl<<"end of iterator test"<<endl<<endl;
 }
