@@ -55,7 +55,7 @@ void przyklady()
     cout<<"w3 dx:       "<<wielo3.getDegree()<<",   "<<wielo3<<endl;
     cout<<endl;
 
-    wielo1.reduceFactors();
+    //wielo1.reduceFactors();
     wielo2 = wielo2 - Polynomial<MODE>("4x5");
     wielo3 -= wielo2;
 
@@ -133,7 +133,7 @@ void ui()
         cout << "[3] Pomnoz" <<endl;
         cout << "[4] Pochodna" << endl;
         cout << "[5] Przypisz" << endl;
-        cout << "[6] Zredukuj wspolcz" << endl;
+        //cout << "[6] Zredukuj wspolcz" << endl;
         cout << "[7] Policz wartosc" << endl;
         cout << "[8] Podaj wspolcz" << endl;
         cout << endl << "[0] Zakoncz" << endl;
@@ -192,12 +192,12 @@ void ui()
                 cin>>wielo;
                 break;
             }
-        case 6:
+        /*case 6:
             {
                 cout<<"zredukuj wspolczynniki"<<endl;
                 wielo.reduceFactors();
                 break;
-            }
+            }*/
         case 7:
             {
                 int temp;
@@ -241,14 +241,21 @@ void testIterator()
 
     cout<<endl<<"iterator test: "<<wielo<<endl;
 
-    for (Polynomial<int>::iterator it = wielo.begin(); it != nullptr; it++)
+    for (Polynomial<int>::iterator it = wielo.begin(); it != wielo.end(); it++)
     {
         cout << it->value << " " << it->degree << ",     ";
     }
 
     cout<<endl;
 
-    for (Polynomial<int>::iterator it = wielo.end(); it != nullptr; it--)
+    for (Polynomial<int>::iterator it : wielo)
+    {
+        cout << it->value << " " << it->degree << ",     ";
+    }
+
+    cout<<endl;
+
+    for (Polynomial<int>::iterator it = --wielo.end(); it != nullptr; it--)
     {
         cout << it->value << " " << it->degree << ",     ";
     }

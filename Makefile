@@ -18,7 +18,7 @@ wielo: $(OBJS)
 
 main.o: main.cpp Polynomial.h
 
-Polynomial.o: Polynomial.cpp Polynomial.h
+Polynomial.o: Polynomial.h
 
 clean:
 	$(RM) $(OBJS)
