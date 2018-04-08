@@ -9,6 +9,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <sstream>
 
 /*
     ZASADA TWORZENIA CIAGU ZNAKOW DO PRZEDSTAWIANIA WIELOMIANOW
@@ -223,8 +224,8 @@ private:
     void setPolynomial(const std::string s);
     int typeOfChar(const char c) const;
     int nextState(const int state, const int c, const int i, bool& newError, std::string& errorDetails) const;
-    int setMonomial(const std::string s, bool& newError, std::string& errorDetails, const int beginIt);
-    int addMonomial(const std::string curValue, const std::string curDegree, const int state, const bool isFraction);
+    int setMonomial(const std::string s, bool& newError, std::string& errorDetails, const int beginIt, const bool isPositive);
+    int addMonomial(const std::string curValue, const std::string curDegree, const bool isPositive);
     void checkDegree();
 };
 
@@ -680,6 +681,7 @@ void Polynomial<T>::setPolynomial(const std::string s)
 
     bool newError = false;
     bool errorChar[s.size()];
+    bool isPositive = true;
     std::string errorDetails = "";
 
     for (unsigned int i = 0; i < s.size() + 1; i++)
@@ -687,21 +689,27 @@ void Polynomial<T>::setPolynomial(const std::string s)
         if (i != s.size())
         {
             errorChar[i] = false;
+            if (s[i] == ' ') continue;
         }
 
         if (i == s.size() || s[i] == '+' || s[i] == '-')
         {
-            int result = setMonomial(curMono, newError, errorDetails, i - curMono.size());
+            int result = -1;
+
+            if (curMono.size() > 0) result = setMonomial(curMono, newError, errorDetails, i - curMono.size(), isPositive);
 
             if (result >= 0)
             {
                 errorChar[result] = true;
             }
 
-            if (i != s.size())
+            curMono = "";
+
+            if (i != s.size() && s[i] == '-')
             {
-                curMono = s[i];
+                isPositive = false;
             }
+            else isPositive = true;
         }
         else
         {
@@ -870,9 +878,88 @@ int Polynomial<T>::nextState(const int state, const int c, const int i, bool& ne
 }
 
 template <class T>
-int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string& errorDetails, const int beginIt)
+int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string& errorDetails, const int beginIt, const bool isPositive)
 {
-    int state = BEG;
+    int xPos = -1;
+    int carets = 0;
+    std::string curValue = "";
+    std::string curDegree = "";
+
+    unsigned int deb = s.size()-1;
+    for (unsigned int i = s.size() - 1;; i--)
+    {
+        if (s[i] == '^') carets++;
+
+        if (s[i] == 'x')
+        {
+            xPos = i;
+            break;
+        }
+        if (i == 0) break;
+    }
+
+    if (xPos < 0)
+    {
+        curValue = s;
+    }
+    else
+    {
+        if (carets > 1)
+        {
+            newError = true;
+            errorDetails += "\n   znak " + std::to_string(beginIt) + ": kilka znakow ^";
+            return beginIt + xPos + 1;
+        }
+        if (xPos == s.size() - 1)
+        {
+            curDegree = "1";
+            for (unsigned int i = 0; i < xPos; i++)
+                curValue += s[i];
+        }
+        else
+        {
+            if (carets == 1 && s[xPos + 1] != '^')
+            {
+                newError = true;
+                errorDetails += "\n   znak " + std::to_string(beginIt) + ": znak ^ w zlym miejscu";
+                return beginIt + xPos + 1;
+            }
+            else
+            {
+                for (unsigned int i = xPos + carets + 1; i < s.size(); i++)
+                {
+                    if (s[i] < '0' || s[i] > '9')
+                    {
+                        newError = true;
+                        errorDetails += "\n   znak " + std::to_string(beginIt) + ": znak nie jest cyfra";
+                        return beginIt + i;
+                    }
+                    curDegree += s[i];
+                }
+                for (unsigned int i = 0; i < xPos; i++)
+                    curValue += s[i];
+            }
+        }
+    }
+
+    if (curValue.size() == 0)
+    {
+        if (curDegree.size() > 0) curValue = "1";
+        else curValue = "0";
+    }
+    if (curDegree.size() == 0) curDegree = "0";
+
+    int result = addMonomial(curValue, curDegree, isPositive);
+
+    if (result)
+    {
+        newError = true;
+        if (result == 1) errorDetails += "\n   znak " + std::to_string(beginIt + xPos) + ": niepoprawny wykladnik zmiennej x";
+        if (result == 2) errorDetails += "\n   znak " + std::to_string(beginIt + xPos) + ": niepoprawny wspolczynnik zmiennej x";
+        return beginIt + xPos;
+    }
+
+    /*int state = BEG;
     int beginExp = -1;
     int dot = 0;
     int caret = 0;
@@ -938,20 +1025,40 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
         return beginIt + dot;
     }
 
-    if (addMonomial(curValue, curDegree, state, dot))
+    if (addMonomial(curValue, curDegree, state, dot, isPositive))
     {
         newError = true;
         errorDetails += "\n   znak " + std::to_string(beginIt + beginExp) + ": niepoprawny wykladnik zmiennej x";
         return beginIt + beginExp;
-    }
+    }*/
 
     return -1;
 }
 
 template <class T>
-int Polynomial<T>::addMonomial(const std::string curValue, const std::string curDegree, const int state, const bool isFraction)
+int Polynomial<T>::addMonomial(const std::string curValue, const std::string curDegree, const bool isPositive)
 {
-    long long valueLL = 0;
+    int degree = stoi(curDegree);
+    std::stringstream str;
+    T val;
+
+    str << curValue;
+    str >> val;
+
+    if (str.fail())
+    {
+        str.clear();
+        return 2;
+    }
+
+    if (degree >= 0)
+    {
+        if (isPositive) addToFactor(degree, val);
+        else addToFactor(degree, -val);
+    }
+    else return 1;
+
+    /*long long valueLL = 0;
     long double valueLD = 0;
     if (curValue.size() == 0)
     {
@@ -989,7 +1096,7 @@ int Polynomial<T>::addMonomial(const std::string curValue, const std::string cur
             else             addToFactor(degree, valueLD);
         }
         else return 1;
-    }
+    }*/
     return 0;
 }
 
