@@ -87,16 +87,21 @@ public:
         class Polynomial<T>::Factor* ptr;
         class Polynomial<T>::Factor* prevPtr;
         bool isBegin;
+        int degree;
+
+        Polynomial<T>* parent;
 
     public:
-        const class Polynomial<T>::Factor& operator * ();
+        class Polynomial<T>::Factor& operator * ();
 
         iterator& operator ++ (int);
         iterator& operator -- (int);
         iterator& operator ++ ();
         iterator& operator -- ();
         iterator& operator = (const class Polynomial<T>::iterator& right);
-        //const class Polynomial<T>::Factor* operator -> () const;
+
+        iterator operator + (const unsigned int right);
+        iterator operator - (const unsigned int right);
 
         bool operator == (const class Polynomial<T>::iterator& right) const;
         bool operator != (const class Polynomial<T>::iterator& right) const;
@@ -104,8 +109,45 @@ public:
         bool operator != (std::nullptr_t) const;
     };
 
-    iterator begin() const;
-    iterator end() const;
+    class const_iterator
+    {
+    private:
+        friend Polynomial<T>;
+
+        class Polynomial<T>::Factor* ptr;
+        class Polynomial<T>::Factor* prevPtr;
+        bool isBegin;
+        int degree;
+
+        Polynomial<T>* parent;
+
+    public:
+        const_iterator();
+        const_iterator(iterator& it);
+
+        const class Polynomial<T>::Factor& operator * ();
+
+        const_iterator& operator ++ (int);
+        const_iterator& operator -- (int);
+        const_iterator& operator ++ ();
+        const_iterator& operator -- ();
+        const_iterator& operator = (const class Polynomial<T>::const_iterator& right);
+
+        const_iterator operator + (const unsigned int right);
+        const_iterator operator - (const unsigned int right);
+
+        bool operator == (const class Polynomial<T>::const_iterator& right) const;
+        bool operator != (const class Polynomial<T>::const_iterator& right) const;
+        bool operator == (std::nullptr_t) const;
+        bool operator != (std::nullptr_t) const;
+    };
+
+    iterator begin();
+    iterator end();
+    iterator erase(iterator it);
+
+    const_iterator cbegin() const;
+    const_iterator cend() const;
 
 private:
     int polyDegree;
@@ -128,6 +170,12 @@ private:
         const T& getValue() const;
         const int& getDegree() const;
         void setValue(const T& newValue);
+
+    private:
+        Polynomial<T>::iterator* it;
+
+        friend class Polynomial<T>::iterator;
+        friend class Polynomial<T>::const_iterator;
     };
 
     Factor* first = nullptr;
@@ -136,7 +184,7 @@ private:
     Factor* addFactor(const int deg);
     Factor* addFactor(const int deg, Factor** after);
     Factor* addFactor(const int deg, const T value);
-    void addToFactor(const int deg, const T value);
+    Factor* addToFactor(const int deg, const T value);
     Factor* freeFactor(Factor** temp);
     void clearMemory();
 
@@ -214,6 +262,7 @@ Polynomial<T>::Factor::Factor(const int deg)
     value = 0;
     next = nullptr;
     prev = nullptr;
+    it = nullptr;
 }
 
 template <class T>
@@ -222,6 +271,7 @@ Polynomial<T>::Factor::Factor()
     value = 0;
     next = nullptr;
     prev = nullptr;
+    it = nullptr;
 }
 
 template <class T>
@@ -242,7 +292,11 @@ void Polynomial<T>::Factor::setValue(const T& newValue)
     value = newValue;
     if (value == 0)
     {
-
+//        parent->freeFactor(this);
+        if (it != nullptr)
+        {
+            it->parent->erase(*it);
+        }
     }
 }
 
@@ -509,7 +563,7 @@ Polynomial<T>& Polynomial<T>::operator *= (const Polynomial<T>& right)
 template <class T>
 typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg)
 {
-    if (first == nullptr)
+    /*if (first == nullptr)
     {
         first = last = new Factor(deg);
         return first;
@@ -519,7 +573,11 @@ typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg)
     last = temp->next = new Factor(deg);
     last->prev = temp;
 
-    return last;
+    return last;*/
+
+    Factor* temp = addToFactor(deg, 0);
+    temp->value = 0;
+    return temp;
 }
 
 template <class T>
@@ -553,13 +611,13 @@ typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg, const T 
 }
 
 template <class T>
-void Polynomial<T>::addToFactor(const int deg, const T value)
+typename Polynomial<T>::Factor* Polynomial<T>::addToFactor(const int deg, const T value)
 {
     if (first == nullptr)
     {
         first = last = new Factor(deg);
         first->value += value;
-        return;
+        return first;
     }
 
     for (Factor* cur = first; cur != nullptr; cur = cur->next)
@@ -567,7 +625,7 @@ void Polynomial<T>::addToFactor(const int deg, const T value)
         if (cur->degree == deg)
         {
             cur->value += value;
-            return;
+            return cur;
         }
         if (cur->degree > deg)
         {
@@ -588,7 +646,7 @@ void Polynomial<T>::addToFactor(const int deg, const T value)
             newFactor->next = cur;
 
             newFactor->value += value;
-            return;
+            return newFactor;
         }
     }
 
@@ -598,6 +656,8 @@ void Polynomial<T>::addToFactor(const int deg, const T value)
     last = prev->next;
 
     last->value += value;
+
+    return last;
 }
 
 template <class T>
@@ -1116,24 +1176,59 @@ std::istream& operator >> (std::istream& in, Polynomial<T>& right)
 }
 
 template <class T>
-typename Polynomial<T>::iterator Polynomial<T>::begin() const
+typename Polynomial<T>::iterator Polynomial<T>::begin()
 {
     iterator it;
     it.ptr = first;
+    it.parent = this;
     return it;
 };
 
 template <class T>
-typename Polynomial<T>::iterator Polynomial<T>::end() const
+typename Polynomial<T>::iterator Polynomial<T>::end()
 {
     iterator it;
     it.ptr = last;
+    it.parent = this;
     return ++it;
 };
 
 template <class T>
-const typename Polynomial<T>::Factor& Polynomial<T>::iterator::operator * ()
+typename Polynomial<T>::iterator Polynomial<T>::erase(class Polynomial<T>::iterator it)
 {
+    iterator newIt;
+    freeFactor(&(it.ptr));
+    return newIt;
+}
+
+template <class T>
+typename Polynomial<T>::const_iterator Polynomial<T>::cbegin() const
+{
+    const_iterator it;
+    it.ptr = first;
+    it.parent = this;
+    return it;
+}
+
+template <class T>
+typename Polynomial<T>::const_iterator Polynomial<T>::cend() const
+{
+    const_iterator it;
+    it.ptr = last;
+//    it.parent = this;
+    return ++it;
+}
+
+template <class T>
+typename Polynomial<T>::Factor& Polynomial<T>::iterator::operator * ()
+{
+    if (ptr == nullptr)
+    {
+        ptr = parent->addFactor(degree);
+    }
+
+//    ptr->parent = parent;
+    ptr->it = this;
     return *ptr;
 }
 
@@ -1184,6 +1279,28 @@ typename Polynomial<T>::iterator& Polynomial<T>::iterator::operator = (const cla
     return *this;
 }
 
+template <class T>
+typename Polynomial<T>::iterator Polynomial<T>::iterator::operator + (const unsigned int right)
+{
+    iterator it = this;
+    for (int i = 0; i < right; i++)
+    {
+        it++;
+    }
+    return it;
+}
+
+template <class T>
+typename Polynomial<T>::iterator Polynomial<T>::iterator::operator - (const unsigned int right)
+{
+    iterator it = this;
+    for (int i = 0; i < right; i++)
+    {
+        it--;
+    }
+    return it;
+}
+
 /*template <class T>
 const class Polynomial<T>::Factor* Polynomial<T>::iterator::operator -> () const
 {
@@ -1210,6 +1327,134 @@ bool Polynomial<T>::iterator::operator == (std::nullptr_t) const
 
 template <class T>
 bool Polynomial<T>::iterator::operator != (std::nullptr_t) const
+{
+    return ptr != nullptr;
+}
+
+template <class T>
+const typename Polynomial<T>::Factor& Polynomial<T>::const_iterator::operator * ()
+{
+    if (ptr == nullptr)
+    {
+        ptr = parent->addFactor(degree);
+    }
+
+//    ptr->parent = parent;
+//    ptr->it = this;
+    return *ptr;
+}
+
+template <class T>
+Polynomial<T>::const_iterator::const_iterator()
+{
+
+}
+
+template <class T>
+Polynomial<T>::const_iterator::const_iterator(class Polynomial<T>::iterator& it)
+{
+    ptr = it.ptr;
+    prevPtr = it.prevPtr;
+    isBegin = it.isBegin;
+    degree = it.degree;
+    parent = it.parent;
+}
+
+template <class T>
+typename Polynomial<T>::const_iterator& Polynomial<T>::const_iterator::operator ++ (int)
+{
+    if (ptr != nullptr)
+    {
+        prevPtr = ptr;
+        ptr = ptr->next;
+        isBegin = true;
+    }
+    else if (!isBegin) ptr = prevPtr;
+    return *this;
+}
+
+template <class T>
+typename Polynomial<T>::const_iterator& Polynomial<T>::const_iterator::operator -- (int)
+{
+    if (ptr != nullptr)
+    {
+        prevPtr = ptr;
+        ptr = ptr->prev;
+        isBegin = false;
+    }
+    else if (isBegin) ptr = prevPtr;
+    return *this;
+}
+
+template <class T>
+typename Polynomial<T>::const_iterator& Polynomial<T>::const_iterator::operator ++ ()
+{
+    (*this)++;
+    return *this;
+}
+
+template <class T>
+typename Polynomial<T>::const_iterator& Polynomial<T>::const_iterator::operator -- ()
+{
+    (*this)--;
+    return *this;
+}
+
+template <class T>
+typename Polynomial<T>::const_iterator& Polynomial<T>::const_iterator::operator = (const class Polynomial<T>::const_iterator& right)
+{
+    ptr = right.ptr;
+    return *this;
+}
+
+template <class T>
+typename Polynomial<T>::const_iterator Polynomial<T>::const_iterator::operator + (const unsigned int right)
+{
+    const_iterator it = this;
+    for (int i = 0; i < right; i++)
+    {
+        it++;
+    }
+    return it;
+}
+
+template <class T>
+typename Polynomial<T>::const_iterator Polynomial<T>::const_iterator::operator - (const unsigned int right)
+{
+    const_iterator it = this;
+    for (int i = 0; i < right; i++)
+    {
+        it--;
+    }
+    return it;
+}
+
+/*template <class T>
+const class Polynomial<T>::Factor* Polynomial<T>::const_iterator::operator -> () const
+{
+    return ptr;
+}*/
+
+template <class T>
+bool Polynomial<T>::const_iterator::operator == (const class Polynomial<T>::const_iterator& right) const
+{
+    return ptr == right.ptr;
+}
+
+template <class T>
+bool Polynomial<T>::const_iterator::operator != (const class Polynomial<T>::const_iterator& right) const
+{
+    return ptr != right.ptr;
+}
+
+template <class T>
+bool Polynomial<T>::const_iterator::operator == (std::nullptr_t) const
+{
+    return ptr == nullptr;
+}
+
+template <class T>
+bool Polynomial<T>::const_iterator::operator != (std::nullptr_t) const
 {
     return ptr != nullptr;
 }

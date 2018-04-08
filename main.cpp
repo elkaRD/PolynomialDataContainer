@@ -250,8 +250,24 @@ void testIterator()
 
     for (auto it : wielo)
     {
+        it.setValue(it.getValue() + 1);
         cout << it.getValue() << " " << it.getDegree() << ",     ";
+    }cout << endl;
+
+    Polynomial<int>::iterator it = wielo.begin();
+    Polynomial<int>::const_iterator cit = it;
+
+    while (cit != wielo.cend())
+    {
+//        (*cit).setValue(2);       //error - that's how it supposed to be
+        cout << (*cit).getValue() << " " << (*cit).getDegree() << ",    ";
+        cit++;
     }
+
+/*    for (Polynomial<int>::const_iterator ccit : wielo)
+    {
+
+    }*/
 
     cout<<endl;
 
