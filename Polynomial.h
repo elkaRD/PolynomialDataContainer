@@ -10,8 +10,6 @@
 #include <cstdlib>
 #include <string>
 
-#define MAX_DEGREE  8
-
 /*
     ZASADA TWORZENIA CIAGU ZNAKOW DO PRZEDSTAWIANIA WIELOMIANOW
 
@@ -59,7 +57,6 @@ public:
     int getDegree() const;
     T calc(const T x) const;
     T getFactor(const int x) const;
-    //void reduceFactors();
 
     static bool checkLastError(std::string& getErrorMsg);
 
@@ -229,7 +226,6 @@ private:
     int setMonomial(const std::string s, bool& newError, std::string& errorDetails, const int beginIt);
     int addMonomial(const std::string curValue, const std::string curDegree, const int state, const bool isFraction);
     void checkDegree();
-    //long long greatestCommonDivider(long long a, long long b) const;
 };
 
 template <class T>
@@ -292,7 +288,6 @@ void Polynomial<T>::Factor::setValue(const T& newValue)
     value = newValue;
     if (value == 0)
     {
-//        parent->freeFactor(this);
         if (it != nullptr)
         {
             it->parent->erase(*it);
@@ -409,40 +404,6 @@ T Polynomial<T>::getFactor(const int x) const
     }
     return 0;
 }
-
-/*template <class T>
-void Polynomial<T>::reduceFactors()
-{
-    bool isBegin = true;
-    int gcd = 1;
-
-    Factor* cur = first;
-    while (cur != nullptr)
-    {
-        if (cur->value != 0)
-        {
-            if (isBegin)
-            {
-                isBegin = false;
-                gcd = cur->value;
-                if (gcd < 0) gcd *= -1;
-            }
-            else
-            {
-                gcd = greatestCommonDivider(gcd, cur->value);
-            }
-        }
-
-        cur = cur->next;
-    }
-
-    cur = first;
-    while (cur != nullptr)
-    {
-        cur->value /= gcd;
-        cur = cur->next;
-    }
-}*/
 
 template <class T>
 bool Polynomial<T>::checkLastError(std::string& getErrorMsg)
@@ -563,18 +524,6 @@ Polynomial<T>& Polynomial<T>::operator *= (const Polynomial<T>& right)
 template <class T>
 typename Polynomial<T>::Factor* Polynomial<T>::addFactor(const int deg)
 {
-    /*if (first == nullptr)
-    {
-        first = last = new Factor(deg);
-        return first;
-    }
-
-    Factor* temp = last;
-    last = temp->next = new Factor(deg);
-    last->prev = temp;
-
-    return last;*/
-
     Factor* temp = addToFactor(deg, 0);
     temp->value = 0;
     return temp;
@@ -1050,43 +999,6 @@ void Polynomial<T>::checkDegree()
         polyDegree = 0;
 }
 
-/*template <class T>
-long long Polynomial<T>::greatestCommonDivider(long long a, long long b) const
-{
-    //  begin of comment
-    int maxPow = 0;        // prototype for fraction numbers; currently only for integers
-    Factor* cur = first;
-    while (cur != nullptr)
-    {
-        int i;
-        long double temp = cur->value;
-        for (i = 0; temp - (long long)temp != 0; i++)
-        {
-            temp *= 10;
-        }
-        if (i > maxPow) maxPow = i;
-
-        cur = cur->next;
-    }
-
-    for (int i = 0; i < maxPow; i++)
-    {
-        a *= 10;
-        b *= 10;
-    }               //end of comment
-
-    if (a < 0) a *= -1;
-    if (b < 0) b *= -1;
-
-    while (b != 0)
-    {
-        long long c = a % b;
-        a = b;
-        b = c;
-    }
-    return a;
-}*/
-
 template <class T>
 bool operator == (const Polynomial<T>& left, const Polynomial<T>& right)
 {
@@ -1215,7 +1127,7 @@ typename Polynomial<T>::const_iterator Polynomial<T>::cend() const
 {
     const_iterator it;
     it.ptr = last;
-//    it.parent = this;
+
     return ++it;
 }
 
@@ -1227,7 +1139,6 @@ typename Polynomial<T>::Factor& Polynomial<T>::iterator::operator * ()
         ptr = parent->addFactor(degree);
     }
 
-//    ptr->parent = parent;
     ptr->it = this;
     return *ptr;
 }
@@ -1301,12 +1212,6 @@ typename Polynomial<T>::iterator Polynomial<T>::iterator::operator - (const unsi
     return it;
 }
 
-/*template <class T>
-const class Polynomial<T>::Factor* Polynomial<T>::iterator::operator -> () const
-{
-    return ptr;
-}*/
-
 template <class T>
 bool Polynomial<T>::iterator::operator == (const class Polynomial<T>::iterator& right) const
 {
@@ -1339,8 +1244,6 @@ const typename Polynomial<T>::Factor& Polynomial<T>::const_iterator::operator * 
         ptr = parent->addFactor(degree);
     }
 
-//    ptr->parent = parent;
-//    ptr->it = this;
     return *ptr;
 }
 
@@ -1428,12 +1331,6 @@ typename Polynomial<T>::const_iterator Polynomial<T>::const_iterator::operator -
     }
     return it;
 }
-
-/*template <class T>
-const class Polynomial<T>::Factor* Polynomial<T>::const_iterator::operator -> () const
-{
-    return ptr;
-}*/
 
 template <class T>
 bool Polynomial<T>::const_iterator::operator == (const class Polynomial<T>::const_iterator& right) const

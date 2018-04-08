@@ -239,42 +239,24 @@ void testIterator()
 {
     Polynomial<int> wielo = Polynomial<int>("12x88 + 15x70 + 10x5 + 2x15 - x70 + 3");
 
-    cout<<endl<<"iterator test: "<<wielo<<endl;
-
-    /*for (Polynomial<int>::iterator it = wielo.begin(); it != wielo.end(); it++)
-    {
-        cout << it->value << " " << it->degree << ",     ";
-    }*/
-
-    cout<<endl;
+    cout<<endl<<"iterator test: "<<wielo<<endl<<endl;
 
     for (auto it : wielo)
     {
         it.setValue(it.getValue() + 1);
         cout << it.getValue() << " " << it.getDegree() << ",     ";
-    }cout << endl;
+    }
+    cout << endl;
 
     Polynomial<int>::iterator it = wielo.begin();
     Polynomial<int>::const_iterator cit = it;
 
     while (cit != wielo.cend())
     {
-//        (*cit).setValue(2);       //error - that's how it supposed to be
+        //(*cit).setValue(2);       //error - that's how it supposed to be
         cout << (*cit).getValue() << " " << (*cit).getDegree() << ",    ";
         cit++;
     }
 
-/*    for (Polynomial<int>::const_iterator ccit : wielo)
-    {
-
-    }*/
-
-    cout<<endl;
-
-    /*for (Polynomial<int>::iterator it = --wielo.end(); it != nullptr; it--)
-    {
-        cout << it->value << " " << it->degree << ",     ";
-    }*/
-
-    cout<<endl<<"end of iterator test"<<endl<<endl;
+    cout<<endl<<endl<<"end of iterator test"<<endl<<endl;
 }
