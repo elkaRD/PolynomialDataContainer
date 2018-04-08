@@ -265,6 +265,7 @@ template <class T>
 Polynomial<T>::Factor::Factor()
 {
     value = 0;
+    degree = 0;
     next = nullptr;
     prev = nullptr;
     it = nullptr;
@@ -290,7 +291,9 @@ void Polynomial<T>::Factor::setValue(const T& newValue)
     {
         if (it != nullptr)
         {
-            it->parent->erase(*it);
+            iterator temp = *it;
+            (*it)++;
+            temp.parent->erase(temp);
         }
     }
 }
@@ -1109,7 +1112,8 @@ template <class T>
 typename Polynomial<T>::iterator Polynomial<T>::erase(class Polynomial<T>::iterator it)
 {
     iterator newIt;
-    freeFactor(&(it.ptr));
+    newIt.ptr = freeFactor(&(it.ptr));
+    newIt++;
     return newIt;
 }
 
@@ -1193,8 +1197,8 @@ typename Polynomial<T>::iterator& Polynomial<T>::iterator::operator = (const cla
 template <class T>
 typename Polynomial<T>::iterator Polynomial<T>::iterator::operator + (const unsigned int right)
 {
-    iterator it = this;
-    for (int i = 0; i < right; i++)
+    iterator it = *this;
+    for (unsigned int i = 0; i < right; i++)
     {
         it++;
     }
@@ -1204,8 +1208,8 @@ typename Polynomial<T>::iterator Polynomial<T>::iterator::operator + (const unsi
 template <class T>
 typename Polynomial<T>::iterator Polynomial<T>::iterator::operator - (const unsigned int right)
 {
-    iterator it = this;
-    for (int i = 0; i < right; i++)
+    iterator it = *this;
+    for (unsigned int i = 0; i < right; i++)
     {
         it--;
     }

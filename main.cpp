@@ -237,7 +237,7 @@ void ui()
 
 void testIterator()
 {
-    Polynomial<int> wielo = Polynomial<int>("12x88 + 15x70 + 10x5 + 2x15 - x70 + 3");
+    Polynomial<int> wielo = Polynomial<int>("12x88 + 15x70 + 10x5 + 2x15 - x70 + 3x");
 
     cout<<endl<<"iterator test: "<<wielo<<endl<<endl;
 
@@ -257,6 +257,15 @@ void testIterator()
         cout << (*cit).getValue() << " " << (*cit).getDegree() << ",    ";
         cit++;
     }
+
+    cout << endl;
+
+    it = it + 2;
+    cout << (*it).getValue()<<" "<<(*it).getDegree()<<endl;
+    //it = wielo.erase(it);
+    (*it).setValue(0);
+    cout << (*it).getValue()<<" "<<(*it).getDegree()<<endl;
+    cout<<wielo<<endl;
 
     cout<<endl<<endl<<"end of iterator test"<<endl<<endl;
 }
