@@ -682,6 +682,7 @@ void Polynomial<T>::setPolynomial(const std::string s)
     bool newError = false;
     bool errorChar[s.size()];
     bool isPositive = true;
+    bool isFirst = true;
     std::string errorDetails = "";
 
     for (unsigned int i = 0; i < s.size() + 1; i++)
@@ -697,6 +698,13 @@ void Polynomial<T>::setPolynomial(const std::string s)
             int result = -1;
 
             if (curMono.size() > 0) result = setMonomial(curMono, newError, errorDetails, i - curMono.size(), isPositive);
+            else if (!isFirst)
+            {
+                result = i;
+                newError = true;
+                errorDetails += "\n   znak " + std::to_string(i) + ": pusty jednomian";
+            }
+            isFirst = false;
 
             if (result >= 0)
             {
@@ -885,7 +893,7 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
     std::string curValue = "";
     std::string curDegree = "";
 
-    unsigned int deb = s.size()-1;
+    //unsigned int deb = s.size()-1;
     for (unsigned int i = s.size() - 1;; i--)
     {
         if (s[i] == '^') carets++;
@@ -910,10 +918,10 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
             errorDetails += "\n   znak " + std::to_string(beginIt) + ": kilka znakow ^";
             return beginIt + xPos + 1;
         }
-        if (xPos == s.size() - 1)
+        if (xPos == (int)s.size() - 1)
         {
             curDegree = "1";
-            for (unsigned int i = 0; i < xPos; i++)
+            for (int i = 0; i < xPos; i++)
                 curValue += s[i];
         }
         else
@@ -936,7 +944,7 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
                     }
                     curDegree += s[i];
                 }
-                for (unsigned int i = 0; i < xPos; i++)
+                for (int i = 0; i < xPos; i++)
                     curValue += s[i];
             }
         }
@@ -1045,7 +1053,9 @@ int Polynomial<T>::addMonomial(const std::string curValue, const std::string cur
     str << curValue;
     str >> val;
 
-    if (str.fail())
+    //char c = str.peek();
+
+    if (str.peek() != -1)
     {
         str.clear();
         return 2;

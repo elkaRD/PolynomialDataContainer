@@ -16,6 +16,8 @@ int main()
     cout << "   Projekt PROI - Operacje na wielomianach v2" <<endl;
     cout << "   Robert Dudzinski" <<endl;
 
+    Polynomial<int>wielo = Polynomial<int>("2x^9 + 3x^23^1 - 4x-2sa + 8x2 + 7xx ++ x + x2x");
+
     testIterator();
     przyklady();
     ui();
