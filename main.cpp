@@ -4,7 +4,8 @@
  */
 
 #include "Polynomial.h"
-#define MODE            double
+#include <complex>
+#define MODE            complex<int>
 using namespace std;
 
 void przyklady();
@@ -16,10 +17,10 @@ int main()
     cout << "   Projekt PROI - Operacje na wielomianach v2" <<endl;
     cout << "   Robert Dudzinski" <<endl;
 
-    Polynomial<int>wielo = Polynomial<int>("2x^9 + 3x^23^1 - 4x-2sa + 8x2 + 7xx ++ x + x2x");
-    string e;
-    if (Polynomial<int>::checkLastError(e)) cout<<e<<endl;
-    cout<<endl<<endl;
+    /*complex<int> cn(1,3);
+    cout<<"complex: "<<cn<<endl;
+    cin>>cn;
+    cout<<"complex: "<<cn<<endl;*/
 
     testIterator();
     przyklady();
@@ -52,7 +53,7 @@ void przyklady()
     cout<<endl;
 
     wielo1 += "11x^3-17";
-    wielo2 *= 4;
+    wielo2 *= Polynomial<MODE>(4);
     wielo3.derivative();
 
     cout<<"w1 += str:   "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
@@ -110,7 +111,7 @@ void przyklady()
     if (Polynomial<MODE>::checkLastError(e)) cout<<e<<endl;
 
     wielo1 = "x8+x7+x6+x5+x4+x3+x2+x+1";
-    wielo2 = 7;
+    wielo2 = Polynomial<MODE>(7);
     //wielo3 = Polynomial<int>(2*wielo1*3 + 2*wielo2);
 
     cout<<"w1 = str:          "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
@@ -272,5 +273,5 @@ void testIterator()
     cout << (*it).getValue()<<" "<<(*it).getDegree()<<endl;
     cout<<wielo<<endl;
 
-    cout<<endl<<endl<<"end of iterator test"<<endl<<endl;
+    cout<<endl<<"end of iterator test"<<endl<<endl;
 }

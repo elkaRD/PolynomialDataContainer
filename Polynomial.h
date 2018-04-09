@@ -1183,8 +1183,9 @@ std::ostream& operator << (std::ostream& out, const Polynomial<T>& right)
     {
         if (cur->value != 0)
         {
-            if (!isFirst) out << " ";
-            if (!isFirst && cur->value > 0) out << "+ ";
+            //if (!isFirst) out << " ";
+            //if (!isFirst && cur->value > 0) out << "+ ";
+            if (!isFirst) out << " + ";
 
             if (cur->degree == 0) out << cur->value;
             else
