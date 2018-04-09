@@ -5,7 +5,7 @@
 
 #include "Polynomial.h"
 #include <complex>
-#define MODE            complex<int>
+#define MODE            complex<float>
 using namespace std;
 
 void przyklady();

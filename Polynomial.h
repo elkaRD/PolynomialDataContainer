@@ -317,7 +317,7 @@ void Polynomial<T>::derivative()
     {
         if (cur->degree > 0)
         {
-            cur->value = cur->degree * cur->value;
+            cur->value = static_cast<T>(cur->degree) * cur->value;
             cur->degree--;
 
             cur = cur->next;
@@ -426,7 +426,7 @@ Polynomial<T>& Polynomial<T>::modifyFactors(const Polynomial<T>& right, const Mo
         else if (mode == SUBTRACT)
             curL->value -= curR->value;
 
-        if (curL->value == 0)
+        if (curL->value == static_cast<T>(0))
         {
             curL = freeFactor(&curL);
         }
@@ -489,7 +489,7 @@ Polynomial<T>& Polynomial<T>::operator *= (const Polynomial<T>& right)
     curL = temp.first;
     while (curL != nullptr)
     {
-        if (curL->value == 0) curL = freeFactor(&curL);
+        if (curL->value == static_cast<T>(0)) curL = freeFactor(&curL);
         if (curL != nullptr) curL = curL->next;
     }
 
@@ -826,7 +826,7 @@ int Polynomial<T>::addMonomial(const std::string curValue, const std::string cur
     }
     else return 1;
 
-    if (val == 0)
+    if (val == static_cast<T>(0))
     {
         return 3;
     }
@@ -895,16 +895,16 @@ std::ostream& operator << (std::ostream& out, const Polynomial<T>& right)
     class Polynomial<T>::Factor* cur = right.last;
     while (cur != nullptr)
     {
-        if (cur->value != 0)
+        if (cur->value != static_cast<T>(0))
         {
             if (!isFirst) out << " + ";
 
             if (cur->degree == 0) out << cur->value;
             else
             {
-                if (cur->value != 1 && cur->value != -1)
+                if (cur->value != static_cast<T>(1) && cur->value != static_cast<T>(-1))
                     out << cur->value;
-                else if (cur->value == -1)
+                else if (cur->value == static_cast<T>(-1))
                     out << "-";
 
                 out << "x";
@@ -915,7 +915,7 @@ std::ostream& operator << (std::ostream& out, const Polynomial<T>& right)
 
         cur = cur->prev;
     }
-    if (right.polyDegree == 0 && right.first != nullptr && right.first->degree == 0 && right.first->value == 0)
+    if (right.polyDegree == 0 && right.first != nullptr && right.first->degree == 0 && right.first->value == static_cast<T>(0))
         out << "0";
 
     return out;
