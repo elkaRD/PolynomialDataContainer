@@ -14,30 +14,30 @@
 /*
     ZASADA TWORZENIA CIAGU ZNAKOW DO PRZEDSTAWIANIA WIELOMIANOW
 
-    - program pomija spacje
     - jeden string moze zawierac dowolna ilosc jednomianow
     - moze wystapic kilka jednomianow tego samego stopnia; sa wtedy sumowane
     - jednomiany sa oddzielone znakiem + (wyjatek -> czytaj nastepny pkt)
     - jezeli nastepny jednomian jest ujemny nalezy napisac pojedynczy minus (bez znaku + przed minusem)
+    - podany wspolczynnik [TEMP] nie moze zawierac w sobie znakow '+' oraz '-' (sa one uzywane do rozdzielania jednomianow)
 
 
     PRAWIDLOWY JEDNOMIAN
 
-    [LICZBA_CALK1] x [LICZBA_CALK2]
+    [TEMP]x[LICZBA_CALK]
     lub
-    [LICZBA_CALK1] x^ [LICZBA_CALK2]
+    [TEMP]x^[LICZBA_CALK]
     lub
-    [LICZBA_CALK1] x                            - zmienna x w stopniu pierwszym
+    [TEMP]x                             - zmienna x w stopniu pierwszym
     lub
-    x                                           - zmienna x w stopniu pierwszym; wspolczynnik wynosi 1
+    x                                   - zmienna x w stopniu pierwszym; wspolczynnik wynosi 1
     lub
-    -x                                          - zmienna x w stopniu pierwszym; wspolczynnik wynosi -1
+    -x                                  - zmienna x w stopniu pierwszym; wspolczynnik wynosi -1
     lub
-    [LICZBA_CALK]                               - wyraz wolny
+    [TEMP]                              - wyraz wolny; UWAGA: w tym przypadku [TEMP] nie moze zawierac w sobie znaku 'x'
 
     gdzie:
-    LICZBA_CALK1 - wspolczynnik przy odpowiedniej potedze x (liczba calkowita o zakresie zmiennej typu int)
-    LICZBA_CALK2 - potega do ktorej podniesiony jest x (liczba calkowita z zakresu [0; MAX_DEGREE]
+    [TEMP]        - wartosc wspolczynnika prz zmiennej x; jego typ zalezy od typu uzytego przy tworzeniu obiektu klasy Polynomial<TEMP_TYPE>
+    [LICZBA_CALK] - potega do ktorej podniesiony jest x (liczba calkowita z zakresu [0; MAX_DEGREE]
 
 */
 
@@ -185,33 +185,6 @@ private:
     Factor* addToFactor(const int deg, const T value);
     Factor* freeFactor(Factor** temp);
     void clearMemory();
-
-    enum State
-    {
-        BEG,        //beginning
-        SPM,        //single plus minus
-        SD,         //single non-zero digit
-        SN,         //single number
-        DOT,        //single dot
-        FR,         //fraction part
-        X,          //single x
-        XC,         //x and caret
-        XZ,         //x power 0
-        XP,         //x power non 0
-        SZ,         //single 0
-        SE          //state error
-    };
-
-    enum CharType
-    {
-        CPM,        //plus minus
-        CNZ,        //non zero digit
-        CZ,         //zero digit
-        CX,         //x
-        CC,         //caret
-        CP,         //point
-        CE          //different
-    };
 
     enum ModifyMode
     {
@@ -742,150 +715,6 @@ void Polynomial<T>::setPolynomial(const std::string s)
 }
 
 template <class T>
-int Polynomial<T>::typeOfChar(const char c) const
-{
-    if (c >= '1' && c <= '9') return CNZ;
-    if (c == '0')             return CZ;
-    if (c == 'x')             return CX;
-    if (c == '+' || c == '-') return CPM;
-    if (c == '^')             return CC;
-    if (c == '.')             return CP;
-
-    return CE;
-}
-
-template <class T>
-int Polynomial<T>::nextState(const int state, const int c, const int i, bool& newError, std::string& errorDetails) const
-{
-    if (state == BEG)
-    {
-        switch (c)
-        {
-            case CPM: return SPM;
-            case CNZ: return SD;
-            case CX:  return X;
-            case CZ:  return SZ;
-            default:
-                newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": niepoprawne rozpoczecie jednomianu";
-                return SE;
-        }
-    }
-    if (state == SPM)
-    {
-        switch (c)
-        {
-            case CNZ: return SD;
-            case CX:  return X;
-            case CZ:  return SZ;
-            default:
-                newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": powinna byc liczba";
-                return SE;
-        }
-    }
-    if (state == SD)
-    {
-        switch (c)
-        {
-            case CZ: case CNZ: return SN;
-            case CX:           return X;
-            case CP:           return DOT;
-            default:
-                newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": powinna byc liczba";
-                return SE;
-        }
-    }
-    if (state == SN)
-    {
-        switch (c)
-        {
-            case CZ: case CNZ: return SN;
-            case CX:           return X;
-            case CP:           return DOT;
-            default:
-                newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": powinna byc liczba";
-                return SE;
-        }
-    }
-    if (state == SZ)
-    {
-        switch (c)
-        {
-            case CX: return X;
-            case CP: return DOT;
-            default:
-                newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": powinien byc x";
-                return SE;
-        }
-    }
-    if (state == DOT)
-    {
-        switch (c)
-        {
-            case CZ: case CNZ: return FR;
-            default:
-                newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": brak ulamka";
-                return SE;
-        }
-    }
-    if (state == FR)
-    {
-        switch (c)
-        {
-            case CZ: case CNZ: return FR;
-            case CX:           return X;
-            default:
-                newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": niepoprawny ulamek";
-                return SE;
-        }
-    }
-    if (state == X)
-    {
-        switch (c)
-        {
-            case CC:  return XC;
-            case CZ:  return XZ;
-            case CNZ: return XP;
-            default:
-                newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": powinien byc wykladnik";
-                return SE;
-        }
-    }
-    if (state == XC)
-    {
-        switch (c)
-        {
-            case CNZ: return XP;
-            case CZ:  return XZ;
-            default:
-                newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": powinien byc wykladnik";
-                return SE;
-        }
-    }
-    if (state == XP)
-    {
-        switch (c)
-        {
-            case CZ: case CNZ: return XP;
-            default:
-                newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": powinna byc liczba";
-                return SE;
-        }
-    }
-
-    return SE;
-}
-
-template <class T>
 int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string& errorDetails, const int beginIt, const bool isPositive)
 {
     int xPos = -1;
@@ -893,7 +722,6 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
     std::string curValue = "";
     std::string curDegree = "";
 
-    //unsigned int deb = s.size()-1;
     for (unsigned int i = s.size() - 1;; i--)
     {
         if (s[i] == '^') carets++;
@@ -972,79 +800,6 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
         return beginIt;
     }
 
-    /*int state = BEG;
-    int beginExp = -1;
-    int dot = 0;
-    int caret = 0;
-
-    std::string curValue = "";
-    std::string curDegree = "";
-
-    for (unsigned int i = 0; i < s.size(); i++)
-    {
-        if (s[i] == ' ') continue;
-
-        int c = typeOfChar(s[i]);
-        state = nextState(state, c, beginIt + i, newError, errorDetails);
-
-        if ((state == SPM && s[i] == '-') || state == SD || state == SN || state == SZ || state == DOT || state == FR)
-        {
-            curValue += s[i];
-        }
-        if (state == XZ || state == XP)
-        {
-            curDegree += s[i];
-            if (beginExp < 0) beginExp = i;
-        }
-        if (state == XC)
-        {
-            caret = i;
-        }
-        if (state == DOT)
-        {
-            dot = i;
-        }
-        if (state == SE)
-        {
-            return beginIt + i;
-        }
-    }
-
-    if (state == BEG)
-    {
-        int index = beginIt + beginExp;
-        if (index < 0) return -1;
-
-        newError = true;
-        errorDetails += "\n   znak " + std::to_string(index) + ": niepoprawny jednomian";
-        return beginIt;
-    }
-    if (state == SPM)
-    {
-        newError = true;
-        errorDetails += "\n   znak " + std::to_string(beginIt) + ": pojedynczy znak + lub -";
-        return beginIt;
-    }
-    if (state == XC)
-    {
-        newError = true;
-        errorDetails += "\n   znak " + std::to_string(beginIt + caret) + ": niepoprawne uzycie znaku ^";
-        return beginIt + caret;
-    }
-    if (state == DOT)
-    {
-        newError = true;
-        errorDetails += "\n   znak " + std::to_string(beginIt + dot) + ": niepoprawny ulamek";
-        return beginIt + dot;
-    }
-
-    if (addMonomial(curValue, curDegree, state, dot, isPositive))
-    {
-        newError = true;
-        errorDetails += "\n   znak " + std::to_string(beginIt + beginExp) + ": niepoprawny wykladnik zmiennej x";
-        return beginIt + beginExp;
-    }*/
-
     return -1;
 }
 
@@ -1057,8 +812,6 @@ int Polynomial<T>::addMonomial(const std::string curValue, const std::string cur
 
     str << curValue;
     str >> val;
-
-    //char c = str.peek();
 
     if (str.peek() != -1)
     {
@@ -1078,45 +831,6 @@ int Polynomial<T>::addMonomial(const std::string curValue, const std::string cur
         return 3;
     }
 
-    /*long long valueLL = 0;
-    long double valueLD = 0;
-    if (curValue.size() == 0)
-    {
-        valueLL = 1;
-        valueLD = 1;
-    }
-    else if (curValue.size() == 1 && curValue[0] == '-')
-    {
-        valueLL = -1;
-        valueLD = -1;
-    }
-    else
-    {
-        if (!isFraction) valueLL = stoll(curValue);
-        else             valueLD = stold(curValue);
-    }
-
-    if (state == SD || state == SN || state == XZ || state == FR)
-    {
-        if (!isFraction) addToFactor(0, valueLL);
-        else             addToFactor(0, valueLD);
-    }
-    if (state == X)
-    {
-        if (!isFraction) addToFactor(1, valueLL);
-        else             addToFactor(1, valueLD);
-    }
-    if (state == XP)
-    {
-        int degree = stoi(curDegree);
-
-        if (degree >= 0)
-        {
-            if (!isFraction) addToFactor(degree, valueLL);
-            else             addToFactor(degree, valueLD);
-        }
-        else return 1;
-    }*/
     return 0;
 }
 
@@ -1183,8 +897,6 @@ std::ostream& operator << (std::ostream& out, const Polynomial<T>& right)
     {
         if (cur->value != 0)
         {
-            //if (!isFirst) out << " ";
-            //if (!isFirst && cur->value > 0) out << "+ ";
             if (!isFirst) out << " + ";
 
             if (cur->degree == 0) out << cur->value;

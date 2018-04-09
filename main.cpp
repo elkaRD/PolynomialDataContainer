@@ -17,11 +17,6 @@ int main()
     cout << "   Projekt PROI - Operacje na wielomianach v2" <<endl;
     cout << "   Robert Dudzinski" <<endl;
 
-    /*complex<int> cn(1,3);
-    cout<<"complex: "<<cn<<endl;
-    cin>>cn;
-    cout<<"complex: "<<cn<<endl;*/
-
     testIterator();
     przyklady();
     ui();
@@ -61,7 +56,6 @@ void przyklady()
     cout<<"w3 dx:       "<<wielo3.getDegree()<<",   "<<wielo3<<endl;
     cout<<endl;
 
-    //wielo1.reduceFactors();
     wielo2 = wielo2 - Polynomial<MODE>("4x5");
     wielo3 -= wielo2;
 
@@ -112,7 +106,6 @@ void przyklady()
 
     wielo1 = "x8+x7+x6+x5+x4+x3+x2+x+1";
     wielo2 = Polynomial<MODE>(7);
-    //wielo3 = Polynomial<int>(2*wielo1*3 + 2*wielo2);
 
     cout<<"w1 = str:          "<<wielo1.getDegree()<<",   "<<wielo1<<endl;
     cout<<"w2 = 7:            "<<wielo2.getDegree()<<",   "<<wielo2<<endl;
@@ -139,7 +132,6 @@ void ui()
         cout << "[3] Pomnoz" <<endl;
         cout << "[4] Pochodna" << endl;
         cout << "[5] Przypisz" << endl;
-        //cout << "[6] Zredukuj wspolcz" << endl;
         cout << "[7] Policz wartosc" << endl;
         cout << "[8] Podaj wspolcz" << endl;
         cout << endl << "[0] Zakoncz" << endl;
@@ -198,12 +190,6 @@ void ui()
                 cin>>wielo;
                 break;
             }
-        /*case 6:
-            {
-                cout<<"zredukuj wspolczynniki"<<endl;
-                wielo.reduceFactors();
-                break;
-            }*/
         case 7:
             {
                 int temp;
@@ -259,7 +245,7 @@ void testIterator()
 
     while (cit != wielo.cend())
     {
-        //(*cit).setValue(2);       //error - that's how it supposed to be
+        //(*cit).setValue(2);       //error because cit is const_iterator
         cout << (*cit).getValue() << " " << (*cit).getDegree() << ",    ";
         cit++;
     }
@@ -268,7 +254,7 @@ void testIterator()
 
     it = it + 2;
     cout << (*it).getValue()<<" "<<(*it).getDegree()<<endl;
-    //it = wielo.erase(it);
+    //it = wielo.erase(it);  //the same like (*it).setValue(0);
     (*it).setValue(0);
     cout << (*it).getValue()<<" "<<(*it).getDegree()<<endl;
     cout<<wielo<<endl;
