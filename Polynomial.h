@@ -962,9 +962,14 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
     if (result)
     {
         newError = true;
-        if (result == 1) errorDetails += "\n   znak " + std::to_string(beginIt + xPos) + ": niepoprawny wykladnik zmiennej x";
-        if (result == 2) errorDetails += "\n   znak " + std::to_string(beginIt + xPos) + ": niepoprawny wspolczynnik zmiennej x";
-        return beginIt + xPos;
+        if (result == 1)
+        {
+            errorDetails += "\n   znak " + std::to_string(beginIt + xPos) + ": niepoprawny wykladnik zmiennej x";
+            return beginIt + xPos;
+        }
+        if (result == 2) errorDetails += "\n   znak " + std::to_string(beginIt) + ": niepoprawny wspolczynnik zmiennej x";
+        if (result == 3) errorDetails += "\n   uwaga znak " + std::to_string(beginIt) + ": zerowy jednomian";
+        return beginIt;
     }
 
     /*int state = BEG;
@@ -1067,6 +1072,11 @@ int Polynomial<T>::addMonomial(const std::string curValue, const std::string cur
         else addToFactor(degree, -val);
     }
     else return 1;
+
+    if (val == 0)
+    {
+        return 3;
+    }
 
     /*long long valueLL = 0;
     long double valueLD = 0;
