@@ -159,9 +159,6 @@ private:
         Factor(const int deg);
         Factor();
 
-        T value;
-        int degree;
-
         Factor* next;
         Factor* prev;
 
@@ -170,10 +167,12 @@ private:
         void setValue(const T& newValue);
 
     private:
+        T value;
+        int degree;
+
         Polynomial<T>::iterator* it;
 
-        friend class Polynomial<T>::iterator;
-        friend class Polynomial<T>::const_iterator;
+        friend class Polynomial<T>;
     };
 
     Factor* first = nullptr;
@@ -851,8 +850,8 @@ bool operator == (const Polynomial<T>& left, const Polynomial<T>& right)
 
     while (curL != nullptr && curR != nullptr)
     {
-        if (curL->degree != curR->degree) return false;
-        if (curL->value != curR->value) return false;
+        if (curL->getDegree() != curR->getDegree()) return false;
+        if (curL->getValue() != curR->getValue()) return false;
 
         curL = curL->next;
         curR = curR->next;
@@ -895,27 +894,27 @@ std::ostream& operator << (std::ostream& out, const Polynomial<T>& right)
     class Polynomial<T>::Factor* cur = right.last;
     while (cur != nullptr)
     {
-        if (cur->value != static_cast<T>(0))
+        if (cur->getValue() != static_cast<T>(0))
         {
             if (!isFirst) out << " + ";
 
-            if (cur->degree == 0) out << cur->value;
+            if (cur->getDegree() == 0) out << cur->getValue();
             else
             {
-                if (cur->value != static_cast<T>(1) && cur->value != static_cast<T>(-1))
-                    out << cur->value;
-                else if (cur->value == static_cast<T>(-1))
+                if (cur->getValue() != static_cast<T>(1) && cur->getValue() != static_cast<T>(-1))
+                    out << cur->getValue();
+                else if (cur->getValue() == static_cast<T>(-1))
                     out << "-";
 
                 out << "x";
-                if (cur->degree != 1) out << "^" << cur->degree;
+                if (cur->getDegree() != 1) out << "^" << cur->getDegree();
             }
             isFirst = false;
         }
 
         cur = cur->prev;
     }
-    if (right.polyDegree == 0 && right.first != nullptr && right.first->degree == 0 && right.first->value == static_cast<T>(0))
+    if (right.polyDegree == 0 && right.first != nullptr && right.first->getDegree() == 0 && right.first->getValue() == static_cast<T>(0))
         out << "0";
 
     return out;

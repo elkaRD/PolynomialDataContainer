@@ -5,7 +5,7 @@ CPPFLAGS= -std=c++11
 LDFLAGS=
 LDLIBS= -lm
 
-SRCS=main.cpp Polynomial.cpp
+SRCS=main.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: wielo
