@@ -1,6 +1,12 @@
-/*  Projekt 3 PROI - Wielomiany v2
- *  Robert Dudzinski 2018
- *  Polynomial.h
+/*  EN: Project on the 2nd semester of CS at Warsaw University of Technology
+ *      Polynomial as a data container
+ *
+ *  PL: Projekt PROI (Programowanie obiektowe) PW WEiTI 18L
+ *      Wielomian jako kontener danych
+ *
+ *  Copyright (C) Robert Dudzinski 2018
+ *
+ *  File: Polynomial.h
  */
 
 #ifndef POLYNOMIAL_H
@@ -12,32 +18,32 @@
 #include <sstream>
 
 /*
-    ZASADA TWORZENIA CIAGU ZNAKOW DO PRZEDSTAWIANIA WIELOMIANOW
+    RULES OF CREATING A STRING TO REPRESENT A POLYNOMIAL
 
-    - jeden string moze zawierac dowolna ilosc jednomianow
-    - moze wystapic kilka jednomianow tego samego stopnia; sa wtedy sumowane
-    - jednomiany sa oddzielone znakiem + (wyjatek -> czytaj nastepny pkt)
-    - jezeli nastepny jednomian jest ujemny nalezy napisac pojedynczy minus (bez znaku + przed minusem)
-    - podany wspolczynnik [TEMP] nie moze zawierac w sobie znakow '+' oraz '-' (sa one uzywane do rozdzielania jednomianow)
+     - single string could contain any number of monomials
+     - few monomials of the same degree are allowed; they will be summed
+     - monomials are separated by character '+' (one exception -> read the next point)
+     - if the next monomial is negative, user should type a single '-' (without '+' before the minus)
+     - given factor [TEMP] could not contain '+' and '-' characters (they are used for separating monomials)
 
 
-    PRAWIDLOWY JEDNOMIAN
+    CORRECT SYNTAX OF THE MONOMIAL:
 
-    [TEMP]x[LICZBA_CALK]
-    lub
-    [TEMP]x^[LICZBA_CALK]
-    lub
-    [TEMP]x                             - zmienna x w stopniu pierwszym
-    lub
-    x                                   - zmienna x w stopniu pierwszym; wspolczynnik wynosi 1
-    lub
-    -x                                  - zmienna x w stopniu pierwszym; wspolczynnik wynosi -1
-    lub
-    [TEMP]                              - wyraz wolny; UWAGA: w tym przypadku [TEMP] nie moze zawierac w sobie znaku 'x'
+    [TEMP]x[INTEGER]    - degree = INTEGER; factor = TEMP
+    or
+    [TEMP]x^[INTEGER]   - degree = INTEGER; factor = TEMP
+    or
+    [TEMP]x				- degree = 1; factor = TEMP
+    or
+    x				    - degree = 1; factor = 1
+    or
+    -x				    - degree = 1; factor = -1
+    or
+    [TEMP]				- a constant term; in this case [TEMP] could not contain 'x' character
 
-    gdzie:
-    [TEMP]        - wartosc wspolczynnika prz zmiennej x; jego typ zalezy od typu uzytego przy tworzeniu obiektu klasy Polynomial<TEMP_TYPE>
-    [LICZBA_CALK] - potega do ktorej podniesiony jest x (liczba calkowita z zakresu [0; MAX_DEGREE]
+    where:
+    [TEMP]		- value of the factor next to x; its type depends on the type used when created an object of Polynomial<TEMP_TYPE> class
+    [INTEGER]	- exponent of the x (values greater or equal 0]
 
 */
 
@@ -376,7 +382,7 @@ T Polynomial<T>::getFactor(const int x) const
     else
     {
         isError = true;
-        errorMsg = "Blad: Proba odczytania nieistniejacego wspolczynnika";
+        errorMsg = "Error: trying to read non-existing factor";
     }
     return 0;
 }
@@ -674,7 +680,7 @@ void Polynomial<T>::setPolynomial(const std::string s)
             {
                 result = i;
                 newError = true;
-                errorDetails += "\n   znak " + std::to_string(i) + ": pusty jednomian";
+                errorDetails += "\n   character " + std::to_string(i) + ": empty monomial";
             }
             isFirst = false;
 
@@ -702,14 +708,14 @@ void Polynomial<T>::setPolynomial(const std::string s)
     if (newError)
     {
         isError = true;
-        errorMsg = "Blad wczytywania wielomianu \"" + s + "\"\n";
-        errorMsg+= "              Bledne znaki:  ";
+        errorMsg = "Error loading polynomial \"" + s + "\"\n";
+        errorMsg+= "   Incorrect characters:  ";
         for (unsigned int i = 0; i < s.size(); i++)
         {
             if (errorChar[i]) errorMsg += "^";
             else errorMsg += "-";
         }
-        errorMsg += errorDetails + "\nNiepoprawne jednomiany zostaly pominiete.";
+        errorMsg += errorDetails + "\nIncorrect monomials have been skipped.";
     }
 }
 
@@ -742,7 +748,7 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
         if (carets > 1)
         {
             newError = true;
-            errorDetails += "\n   znak " + std::to_string(beginIt) + ": kilka znakow ^";
+            errorDetails += "\n   character " + std::to_string(beginIt) + ": few '^' characters";
             return beginIt + xPos + 1;
         }
         if (xPos == (int)s.size() - 1)
@@ -756,7 +762,7 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
             if (carets == 1 && s[xPos + 1] != '^')
             {
                 newError = true;
-                errorDetails += "\n   znak " + std::to_string(beginIt) + ": znak ^ w zlym miejscu";
+                errorDetails += "\n   character " + std::to_string(beginIt) + ": character '^' in the wrong place";
                 return beginIt + xPos + 1;
             }
             else
@@ -766,7 +772,7 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
                     if (s[i] < '0' || s[i] > '9')
                     {
                         newError = true;
-                        errorDetails += "\n   znak " + std::to_string(beginIt) + ": znak nie jest cyfra";
+                        errorDetails += "\n   character " + std::to_string(beginIt) + ": this character is not a number";
                         return beginIt + i;
                     }
                     curDegree += s[i];
@@ -791,11 +797,11 @@ int Polynomial<T>::setMonomial(const std::string s, bool& newError, std::string&
         newError = true;
         if (result == 1)
         {
-            errorDetails += "\n   znak " + std::to_string(beginIt + xPos) + ": niepoprawny wykladnik zmiennej x";
+            errorDetails += "\n   character " + std::to_string(beginIt + xPos) + ": incorrect exponent of variable x";
             return beginIt + xPos;
         }
-        if (result == 2) errorDetails += "\n   znak " + std::to_string(beginIt) + ": niepoprawny wspolczynnik zmiennej x";
-        if (result == 3) errorDetails += "\n   uwaga znak " + std::to_string(beginIt) + ": zerowy jednomian";
+        if (result == 2) errorDetails += "\n   character " + std::to_string(beginIt) + ": incorrect exponent of variable x";
+        if (result == 3) errorDetails += "\n   warning: character " + std::to_string(beginIt) + ": monomial is zero";
         return beginIt;
     }
 

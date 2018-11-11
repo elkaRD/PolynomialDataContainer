@@ -8,20 +8,20 @@ LDLIBS= -lm
 SRCS=main.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
-all: wielo
+all: poly
 debug: CPPFLAGS+=-g
 debug: LDFLAGS+=-g
 debug: wielo
 
-wielo: $(OBJS)
-	$(CXX) $(LDFLAGS)  $(OBJS) -o wielo  $(LDLIBS) 
+poly: $(OBJS)
+	$(CXX) $(LDFLAGS)  $(OBJS) -o poly  $(LDLIBS) 
 
 main.o: main.cpp Polynomial.h
-
 Polynomial.o: Polynomial.h
+Examples.o: Examples.h
 
 clean:
 	$(RM) $(OBJS)
 
 distclean: clean
-	$(RM) wielo
+	$(RM) poly
